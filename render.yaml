@@ -10,7 +10,7 @@ services:
         value: production
       - key: PORT
         value: 8080
-    healthCheckPath: /api/hola
+    healthCheckPath: /health
     autoDeploy: true
 
 databases:

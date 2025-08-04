@@ -45,7 +45,7 @@ public class JdbcService {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error obteniendo productos: " + e.getMessage());
         }
 
         return productos;

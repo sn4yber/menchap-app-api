@@ -15,12 +15,17 @@ public class LoginController {
 
     @PostMapping
     public ResponseEntity<String> login(@RequestBody com.snayber.api_jdbc.Usuario usuario) {
-        boolean acceso = loginService.validarCredenciales(usuario.getUsuario(), usuario.getContrasena());
+        try {
+            boolean acceso = loginService.validarCredenciales(usuario.getUsuario(), usuario.getContrasena());
 
-        if (acceso) {
-            return ResponseEntity.ok("Inicio de sesión exitoso ✅");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas ❌");
+            if (acceso) {
+                return ResponseEntity.ok("Inicio de sesión exitoso ✅");
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas ❌");
+            }
+        } catch (Exception e) {
+            System.err.println("Error en login: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno del servidor");
         }
     }
 }

@@ -21,7 +21,7 @@ public class InventarioRestController {
     }
 
     @GetMapping
-    public List<Producto> obtenerInventario() {
+    public ResponseEntity<List<Producto>> obtenerInventario() {
         List<Producto> inventario = new ArrayList<>();
         String query = "SELECT * FROM productos";
 
@@ -41,11 +41,13 @@ public class InventarioRestController {
                 inventario.add(producto);
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            return ResponseEntity.ok(inventario);
 
-        return inventario;
+        } catch (SQLException e) {
+            System.err.println("Error obteniendo inventario: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ArrayList<>());
+        }
     }
 
     @PostMapping
@@ -69,7 +71,7 @@ public class InventarioRestController {
             return ResponseEntity.status(HttpStatus.CREATED).body("Producto agregado");
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error al guardar producto: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al guardar: " + e.getMessage());
         }
@@ -97,7 +99,7 @@ public class InventarioRestController {
             return ResponseEntity.ok("Producto actualizado");
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error al actualizar producto: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al actualizar: " + e.getMessage());
         }
@@ -115,7 +117,7 @@ public class InventarioRestController {
             return ResponseEntity.ok("Producto eliminado");
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error al eliminar producto: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al eliminar: " + e.getMessage());
         }

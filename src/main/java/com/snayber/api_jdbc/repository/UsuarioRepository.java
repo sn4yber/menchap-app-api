@@ -26,6 +26,7 @@ public class UsuarioRepository {
                 return u;
             }, username, password);
         } catch (Exception e) {
+            System.err.println("Error encontrando usuario: " + e.getMessage());
             return null;
         }
     }

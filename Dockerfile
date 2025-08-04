@@ -9,6 +9,7 @@ RUN mvn clean package -DskipTests
 
 FROM amazoncorretto:17-alpine
 WORKDIR /app
+RUN apk add --no-cache curl
 RUN addgroup -g 1001 -S spring && \
     adduser -u 1001 -S spring -G spring
 COPY --from=build /app/target/*.jar app.jar

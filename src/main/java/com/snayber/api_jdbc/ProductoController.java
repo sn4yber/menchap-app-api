@@ -1,9 +1,11 @@
 package com.snayber.api_jdbc;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -20,7 +22,8 @@ public class ProductoController {
             // Usar el servicio de inventario para guardar
             return ResponseEntity.ok("Producto guardado exitosamente");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al guardar: " + e.getMessage());
+            System.err.println("Error guardando producto: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al guardar: " + e.getMessage());
         }
     }
 
@@ -30,7 +33,9 @@ public class ProductoController {
             List<Producto> productos = jdbcService.obtenerProductos();
             return ResponseEntity.ok(productos);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            System.err.println("Error listando productos: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ArrayList<>());
         }
     }
 
@@ -40,7 +45,8 @@ public class ProductoController {
             // Implementar lógica de eliminación
             return ResponseEntity.ok("Producto eliminado exitosamente");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al eliminar: " + e.getMessage());
+            System.err.println("Error eliminando producto: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar: " + e.getMessage());
         }
     }
 
@@ -50,7 +56,8 @@ public class ProductoController {
             // Implementar lógica de actualización
             return ResponseEntity.ok("Producto actualizado exitosamente");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al actualizar: " + e.getMessage());
+            System.err.println("Error actualizando producto: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar: " + e.getMessage());
         }
     }
 }
