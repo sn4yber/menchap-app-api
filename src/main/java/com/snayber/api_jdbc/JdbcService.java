@@ -1,19 +1,28 @@
 package com.snayber.api_jdbc;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class JdbcService {
-    private final String url = "jdbc:postgresql://localhost:5432/postgres";
-    private final String user = "postgres";
-    private final String password = "456789";
+    
+    private final DataSource dataSource;
+    private final JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    public JdbcService(DataSource dataSource, JdbcTemplate jdbcTemplate) {
+        this.dataSource = dataSource;
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, user, password);
+        return dataSource.getConnection();
     }
 
     public List<Producto> obtenerProductos() {
@@ -30,7 +39,7 @@ public class JdbcService {
                         rs.getString("nombre"),
                         rs.getString("tipo"),
                         rs.getBigDecimal("cantidad"),
-                        rs.getBigDecimal("precio")
+                        rs.getBigDecimal("precio_unitario")
                 );
                 productos.add(producto);
             }

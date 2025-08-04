@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: api-jdbc
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+      - key: PORT
+        value: 8080
+    healthCheckPath: /api/hola
+    autoDeploy: true
+
+databases:
+  - name: api-jdbc-db
+    databaseName: postgres
+    user: postgres
+    plan: free 
