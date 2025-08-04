@@ -1,7 +1,11 @@
 FROM maven:3.9.4-amazoncorretto-17 AS build
 WORKDIR /app
-COPY . .
-RUN mvn clean package -DskipTests -Dproject.build.sourceEncoding=UTF-8 -Dproject.reporting.outputEncoding=UTF-8
+COPY pom.xml .
+RUN mvn dependency:go-offline
+COPY src ./src
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+RUN mvn clean package -DskipTests
 
 FROM amazoncorretto:17-alpine
 WORKDIR /app
