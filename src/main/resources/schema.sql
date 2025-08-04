@@ -1,29 +1,30 @@
--- Crear tabla de productos
-CREATE TABLE IF NOT EXISTS productos (
+-- Insertar usuarios solo si no existen
+INSERT INTO usuarios (username, password) 
+SELECT 'sn4', 'snayber4589'
+WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE username = 'sn4');
+
+INSERT INTO usuarios (username, password) 
+SELECT 'shelsin', '4dejulio'
+WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE username = 'shelsin');
+
+INSERT INTO usuarios (username, password) 
+SELECT 'adalciry', '45577624'
+WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE username = 'adalciry');
+
+-- Mostrar usuarios
+SELECT * FROM usuarios;
+
+-- Eliminar tabla productos si existe
+DROP TABLE IF EXISTS productos;
+
+-- Crear tabla productos
+CREATE TABLE productos (
     id SERIAL PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL,
-    tipo VARCHAR(100),
-    cantidad DECIMAL(10,2) DEFAULT 0,
-    precio_unitario DECIMAL(10,2) DEFAULT 0,
-    precio_total DECIMAL(10,2) DEFAULT 0
+    nombre VARCHAR(100) NOT NULL,
+    tipo VARCHAR(50) NOT NULL,
+    cantidad INTEGER NOT NULL,
+    precio_unitario DECIMAL(10,2) NOT NULL,
+    precio_total DECIMAL(10,2) NOT NULL
+	
+	
 );
-
--- Crear tabla de usuarios
-CREATE TABLE IF NOT EXISTS usuarios (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL
-);
-
--- Insertar datos de ejemplo para usuarios
-INSERT INTO usuarios (username, password) VALUES 
-    ('admin', 'admin123'),
-    ('user', 'user123')
-ON CONFLICT (username) DO NOTHING;
-
--- Insertar datos de ejemplo para productos
-INSERT INTO productos (nombre, tipo, cantidad, precio_unitario, precio_total) VALUES 
-    ('Laptop HP', 'Electrónicos', 5.00, 1200.00, 6000.00),
-    ('Mouse Inalámbrico', 'Accesorios', 20.00, 25.00, 500.00),
-    ('Teclado Mecánico', 'Accesorios', 10.00, 150.00, 1500.00)
-ON CONFLICT (id) DO NOTHING; 
