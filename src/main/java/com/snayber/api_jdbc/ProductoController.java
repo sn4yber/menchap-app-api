@@ -1,63 +1,59 @@
 package com.snayber.api_jdbc;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import com.snayber.api_jdbc.model.Producto;
+import com.snayber.api_jdbc.repository.ProductoRepository;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/productos")
 @CrossOrigin(origins = "*")
 public class ProductoController {
-    
+
     @Autowired
-    private JdbcService jdbcService;
+    private ProductoRepository productoRepository;
+
+    @GetMapping("/listar")
+    public ResponseEntity<List<Producto>> listarProductos() {
+        List<Producto> productos = productoRepository.findAll();
+        return ResponseEntity.ok(productos);
+    }
 
     @PostMapping("/guardar")
     public ResponseEntity<?> guardarProducto(@RequestBody Producto producto) {
         try {
-            // Usar el servicio de inventario para guardar
-            return ResponseEntity.ok("Producto guardado exitosamente");
+            Producto guardado = productoRepository.save(producto);
+            return ResponseEntity.ok(guardado);
         } catch (Exception e) {
-            System.err.println("Error guardando producto: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al guardar: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Error al guardar el producto: " + e.getMessage());
         }
     }
 
-    @GetMapping("/listar")
-    public ResponseEntity<List<Producto>> listarProductos() {
-        try {
-            List<Producto> productos = jdbcService.obtenerProductos();
-            return ResponseEntity.ok(productos);
-        } catch (Exception e) {
-            System.err.println("Error listando productos: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ArrayList<>());
-        }
+    @PutMapping("/actualizar/{id}")
+    public ResponseEntity<?> actualizarProducto(@PathVariable Long id, @RequestBody Producto productoData) {
+        return productoRepository.findById(id)
+                .map(producto -> {
+                    producto.setNombre(productoData.getNombre());
+                    producto.setTipo(productoData.getTipo());
+                    producto.setCantidad(productoData.getCantidad());
+                    producto.setPrecio(productoData.getPrecio());
+                    productoRepository.save(producto);
+                    return ResponseEntity.ok(producto);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminarProducto(@PathVariable Long id) {
         try {
-            // Implementar lógica de eliminación
-            return ResponseEntity.ok("Producto eliminado exitosamente");
+            productoRepository.deleteById(id);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
-            System.err.println("Error eliminando producto: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar: " + e.getMessage());
-        }
-    }
-
-    @PutMapping("/actualizar/{id}")
-    public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody Producto producto) {
-        try {
-            // Implementar lógica de actualización
-            return ResponseEntity.ok("Producto actualizado exitosamente");
-        } catch (Exception e) {
-            System.err.println("Error actualizando producto: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Error al eliminar el producto: " + e.getMessage());
         }
     }
 }

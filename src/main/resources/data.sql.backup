@@ -1,0 +1,79 @@
+-- Insertar datos de ejemplo para desarrollo con H2
+-- Script SQL de inicialización para MainChap Sistema Contable
+
+-- Insertar usuario administrador
+INSERT INTO usuarios (id, username, email, password, fecha_creacion) 
+VALUES (1, 'admin', 'admin@mainchap.com', '$2a$10$N.zmDOD3mlkOB4ULuXzFHOJ5FhIULDdKzFyGp8/D4.3GUQYhLo0.6', CURRENT_TIMESTAMP);
+-- Contraseña: admin123
+
+-- Insertar usuario demo
+INSERT INTO usuarios (id, username, email, password, fecha_creacion) 
+VALUES (2, 'demo', 'demo@mainchap.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi.', CURRENT_TIMESTAMP);
+-- Contraseña: demo123
+
+-- Insertar productos de ejemplo
+INSERT INTO productos (id, nombre, descripcion, precio_compra, precio_venta, stock, stock_minimo, categoria, fecha_creacion, fecha_actualizacion) 
+VALUES (1, 'Laptop Dell Inspiron', 'Laptop para oficina y trabajo', 800.00, 1200.00, 15, 3, 'TECNOLOGIA', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO productos (id, nombre, descripcion, precio_compra, precio_venta, stock, stock_minimo, categoria, fecha_creacion, fecha_actualizacion) 
+VALUES (2, 'Mouse Inalámbrico Logitech', 'Mouse ergonómico para uso diario', 25.00, 45.00, 50, 10, 'TECNOLOGIA', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO productos (id, nombre, descripcion, precio_compra, precio_venta, stock, stock_minimo, categoria, fecha_creacion, fecha_actualizacion) 
+VALUES (3, 'Teclado Mecánico RGB', 'Teclado para gaming y trabajo', 60.00, 120.00, 8, 2, 'TECNOLOGIA', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO productos (id, nombre, descripcion, precio_compra, precio_venta, stock, stock_minimo, categoria, fecha_creacion, fecha_actualizacion) 
+VALUES (4, 'Monitor LED 24"', 'Monitor Full HD para oficina', 150.00, 280.00, 12, 3, 'TECNOLOGIA', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO productos (id, nombre, descripcion, precio_compra, precio_venta, stock, stock_minimo, categoria, fecha_creacion, fecha_actualizacion) 
+VALUES (5, 'Auriculares Bluetooth', 'Auriculares inalámbricos con cancelación de ruido', 80.00, 150.00, 20, 5, 'TECNOLOGIA', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- Insertar algunas ventas de ejemplo
+INSERT INTO ventas (id, usuario_id, total, fecha_venta) 
+VALUES (1, 1, 1545.00, CURRENT_TIMESTAMP);
+
+INSERT INTO ventas (id, usuario_id, total, fecha_venta) 
+VALUES (2, 2, 320.00, CURRENT_TIMESTAMP);
+
+-- Insertar detalles de ventas
+INSERT INTO detalle_ventas (id, venta_id, producto_id, cantidad, precio_unitario, subtotal) 
+VALUES (1, 1, 1, 1, 1200.00, 1200.00);
+
+INSERT INTO detalle_ventas (id, venta_id, producto_id, cantidad, precio_unitario, subtotal) 
+VALUES (2, 1, 2, 3, 45.00, 135.00);
+
+INSERT INTO detalle_ventas (id, venta_id, producto_id, cantidad, precio_unitario, subtotal) 
+VALUES (3, 1, 5, 1, 150.00, 150.00);
+
+INSERT INTO detalle_ventas (id, venta_id, producto_id, cantidad, precio_unitario, subtotal) 
+VALUES (4, 2, 3, 1, 120.00, 120.00);
+
+INSERT INTO detalle_ventas (id, venta_id, producto_id, cantidad, precio_unitario, subtotal) 
+VALUES (5, 2, 4, 1, 280.00, 280.00);
+
+-- Insertar algunas compras de ejemplo
+INSERT INTO compras (id, proveedor, total, fecha_compra) 
+VALUES (1, 'Proveedor TechSupply SA', 2500.00, CURRENT_TIMESTAMP);
+
+INSERT INTO compras (id, proveedor, total, fecha_compra) 
+VALUES (2, 'Distribuidora Digital SRL', 1200.00, CURRENT_TIMESTAMP);
+
+-- Insertar detalles de compras
+INSERT INTO detalle_compras (id, compra_id, producto_id, cantidad, precio_unitario, subtotal) 
+VALUES (1, 1, 1, 5, 800.00, 4000.00);
+
+INSERT INTO detalle_compras (id, compra_id, producto_id, cantidad, precio_unitario, subtotal) 
+VALUES (2, 1, 2, 20, 25.00, 500.00);
+
+INSERT INTO detalle_compras (id, compra_id, producto_id, cantidad, precio_unitario, subtotal) 
+VALUES (3, 2, 3, 10, 60.00, 600.00);
+
+INSERT INTO detalle_compras (id, compra_id, producto_id, cantidad, precio_unitario, subtotal) 
+VALUES (4, 2, 4, 8, 150.00, 1200.00);
+
+-- Reiniciar secuencias para H2
+ALTER SEQUENCE usuarios_seq RESTART WITH 3;
+ALTER SEQUENCE productos_seq RESTART WITH 6;
+ALTER SEQUENCE ventas_seq RESTART WITH 3;
+ALTER SEQUENCE detalle_ventas_seq RESTART WITH 6;
+ALTER SEQUENCE compras_seq RESTART WITH 3;
+ALTER SEQUENCE detalle_compras_seq RESTART WITH 5;
