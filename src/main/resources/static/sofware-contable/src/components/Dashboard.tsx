@@ -1,76 +1,17 @@
 import React from 'react';
+import SidebarMenu from './SidebarMenu';
+import type { ViewType } from './SidebarMenu';
 
 interface DashboardProps {
-  onNavigateToLogin: () => void;
-  onReloadDashboard?: () => void;
+  activeView: ViewType;
+  onSelectView: (view: ViewType) => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ onNavigateToLogin, onReloadDashboard }) => {
+const Dashboard: React.FC<DashboardProps> = ({ activeView, onSelectView }) => {
   return (
     <div className="dashboard-container">
-      {/* Header */}
-      <header className="dashboard-header">
-        <div className="header-content">
-          <div className="logo-section">
-            <h1 className="logo clickable-logo" onClick={onReloadDashboard}>Livo</h1>
-            <p className="subtitle">Dashboard Principal</p>
-          </div>
-          <div className="search-section">
-            <input 
-              type="text" 
-              placeholder="Buscar..." 
-              className="search-input"
-            />
-          </div>
-          <div className="user-section">
-            <button className="user-avatar" onClick={onNavigateToLogin}>U</button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
       <div className="main-content">
-        {/* Sidebar */}
-        <aside className="sidebar">
-          <nav className="nav-menu">
-            <div className="menu-item active">
-              <span className="menu-icon">📊</span>
-              <span>Dashboard</span>
-              <p className="menu-desc">Vista general del negocio</p>
-            </div>
-            
-            <div className="menu-item">
-              <span className="menu-icon">📦</span>
-              <span>Inventario</span>
-              <p className="menu-desc">Gestión de productos</p>
-            </div>
-            
-            <div className="menu-item">
-              <span className="menu-icon">💰</span>
-              <span>Ventas</span>
-              <p className="menu-desc">Registro de ventas</p>
-            </div>
-            
-            <div className="menu-item">
-              <span className="menu-icon">🛒</span>
-              <span>Compras</span>
-              <p className="menu-desc">Control de proveedores</p>
-            </div>
-            
-            <div className="menu-item">
-              <span className="menu-icon">📈</span>
-              <span>Reportes</span>
-              <p className="menu-desc">Análisis y estadísticas</p>
-            </div>
-            
-            <div className="menu-item">
-              <span className="menu-icon">⚙️</span>
-              <span>Configuración</span>
-              <p className="menu-desc">Ajustes del sistema</p>
-            </div>
-          </nav>
-        </aside>
-
+        <SidebarMenu activeView={activeView} onSelectView={onSelectView} />
         {/* Content Area */}
         <main className="content-area">
           <div className="welcome-section">
@@ -123,7 +64,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToLogin, onReloadDashbo
               <h3>Productos Más Vendidos</h3>
               <div className="product-list">
                 <div className="product-item">
-                  <span className="product-name">iPhone 14 Pro</span>
+                  <span className="product-name">tableta samsung </span>
                   <span className="product-sales">25 vendidos</span>
                   <span className="product-revenue">$30,000</span>
                 </div>

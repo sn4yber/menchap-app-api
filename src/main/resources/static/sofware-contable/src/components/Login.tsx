@@ -8,7 +8,11 @@ interface LoginFormData {
   remember: boolean;
 }
 
-const Login: React.FC = () => {
+interface LoginProps {
+  onLoginSuccess: () => void;
+}
+
+const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const [formData, setFormData] = useState<LoginFormData>({
     username: '',
     password: '',
@@ -41,9 +45,8 @@ const Login: React.FC = () => {
 
       if (response.success && response.usuario) {
         console.log('Login exitoso:', response);
-        // Aquí puedes redirigir al dashboard o página principal
-        // Por ejemplo: window.location.href = '/dashboard';
-        alert(`¡Bienvenido ${response.usuario.nombreCompleto}!`);
+        // Redirigir al dashboard
+        onLoginSuccess();
       } else {
         setError(response.message || 'Error al iniciar sesión');
       }
