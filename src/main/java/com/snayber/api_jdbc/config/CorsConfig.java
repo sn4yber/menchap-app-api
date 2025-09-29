@@ -20,14 +20,15 @@ import java.util.List;
 @Configuration
 public class CorsConfig {
 
-    @Value("${app.cors.allowed-origins:http://localhost:3000,http://localhost:8080}")
+    @Value("${app.cors.allowed-origins:http://localhost:3000,http://localhost:5173,http://localhost:8080}")
     private List<String> allowedOrigins;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Configurar orígenes permitidos desde propiedades
+        // Configurar orígenes permitidos desde propiedades - sin usar "*" cuando allowCredentials es true
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:*", "https://localhost:*"));
         configuration.setAllowedOrigins(allowedOrigins);
         
         // Métodos HTTP permitidos

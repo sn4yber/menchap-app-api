@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { authService } from '../services/authService';
-import type { LoginRequest } from '../types/api';
+import { authService } from '../../services/authService';
+import type { LoginRequest } from '../../types/api';
 
 interface LoginFormData {
   username: string;

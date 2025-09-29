@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import Header from './components/Header'
-import Dashboard from './components/Dashboard'
-import Inventario from './components/Inventario'
-import Compras from './components/Compras'
-import Ventas from './components/Ventas'
-import Reportes from './components/Reportes'
-import Configuracion from './components/Configuracion'
-import Login from './components/Login'
+import SidebarMenu from './components/SidebarMenu'
+import Dashboard from './components/pages/Dashboard'
+import Inventario from './components/pages/Inventario'
+import Compras from './components/pages/Compras'
+import Ventas from './components/pages/Ventas'
+import Reportes from './components/pages/Reportes'
+import Configuracion from './components/pages/Configuracion'
+import Login from './components/pages/Login'
 import { authService } from './services/authService'
 import type { ViewType } from './components/SidebarMenu'
 
@@ -24,6 +25,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
   const [loading, setLoading] = useState(true)
   const [view, setView] = useState<ViewType>('DASHBOARD')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     // Verifica autenticación antes de mostrar cualquier contenido
@@ -40,6 +42,15 @@ function App() {
     setIsAuthenticated(false)
   }
 
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen)
+  }
+
+  const handleSelectView = (newView: ViewType) => {
+    setView(newView)
+    setSidebarOpen(false) // Cerrar sidebar al seleccionar una vista
+  }
+
   if (loading) return <div>Cargando...</div>
 
   if (!isAuthenticated) {
@@ -50,7 +61,7 @@ function App() {
   let MainComponent = null;
   switch (view) {
     case 'DASHBOARD':
-      MainComponent = <Dashboard activeView={view} onSelectView={setView} />; break;
+      MainComponent = <Dashboard />; break;
     case 'INVENTARIO':
       MainComponent = <Inventario />; break;
     case 'COMPRAS':
@@ -62,14 +73,28 @@ function App() {
     case 'CONFIGURACION':
       MainComponent = <Configuracion />; break;
     default:
-      MainComponent = <Dashboard activeView={view} onSelectView={setView} />;
+      MainComponent = <Dashboard />;
   }
 
   return (
-    <>
-      <Header onNavigateToLogin={handleLogout} />
-      {MainComponent}
-    </>
+    <div className="dashboard-container">
+      <Header 
+        onNavigateToLogin={handleLogout} 
+        onToggleSidebar={toggleSidebar}
+        onReloadDashboard={() => setView('DASHBOARD')}
+      />
+      <SidebarMenu 
+        activeView={view} 
+        onSelectView={handleSelectView}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
+      <div className={`main-content ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
+        <div className="content-area">
+          {MainComponent}
+        </div>
+      </div>
+    </div>
   )
 }
 

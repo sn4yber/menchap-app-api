@@ -34,15 +34,22 @@ public class SimpleCorsFilter implements Filter {
         boolean originAllowed = false;
         if (origin != null) {
             for (String allowedOrigin : allowedOrigins) {
-                if (allowedOrigin.equals("*") || allowedOrigin.equals(origin)) {
+                if (allowedOrigin.equals(origin) || 
+                    (allowedOrigin.contains("localhost") && origin.contains("localhost"))) {
                     originAllowed = true;
                     break;
                 }
             }
+        } else {
+            // Si no hay origen (solicitudes desde mismo servidor), permitir
+            originAllowed = true;
         }
         
-        if (originAllowed) {
+        if (originAllowed && origin != null) {
             response.setHeader("Access-Control-Allow-Origin", origin);
+        } else if (originAllowed && origin == null) {
+            // Para solicitudes del mismo servidor, usar el primer origen permitido
+            response.setHeader("Access-Control-Allow-Origin", allowedOrigins.get(0));
         }
         
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
