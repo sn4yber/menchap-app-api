@@ -1,168 +1,365 @@
-# API JDBC - Spring Boot Application
+# 📊 Sistema de Inventario y Contabilidad - MenchaP
 
-Aplicación Spring Boot con JDBC para gestión de inventario y autenticación de usuarios.
+Un sistema completo de gestión de inventario y contabilidad construido con **Spring Boot** (backend) y **React + TypeScript** (frontend), diseñado para pequeñas y medianas empresas.
 
-## 🚀 Características
+## 🚀 Característ## 🚀 Despliegue
 
-- Gestión de productos con CRUD completo
-- Autenticación de usuarios
-- Base de datos PostgreSQL
-- API REST con CORS habilitado
-- Configuración optimizada para producción
+### 📡 Render (Automático)
 
-## 🛠️ Tecnologías
+1. Conecta tu repositorio a Render
+2. Render detectará automáticamente `render.yaml`
+3. Se desplegará automáticamentes
 
-- **Spring Boot 3.5.3**
-- **Java 17**
-- **PostgreSQL**
-- **JDBC**
-- **Docker**
-- **Maven**
+### 🏪 Módulo de Inventario
+- ✅ **Gestión completa de productos** (CRUD)
+- 📊 **Dashboard con estadísticas** en tiempo real
+- 🔍 **Búsqueda y filtrado** por categorías
+- 💰 **Formateo automático** de precios colombianos (COP)
+- 📱 **Diseño responsivo** para móviles y tablets
+- 🎨 **Interfaz moderna** con sidebar hamburguesa
+
+### 🔐 Sistema de Autenticación
+- 🔑 **Login seguro** con credenciales
+- 👤 **Gestión de usuarios**
+- 🛡️ **Sesiones persistentes**
+
+### 🎨 Interfaz de Usuario
+- 🖥️ **SPA (Single Page Application)** con React
+- 📱 **Mobile-first design**
+- 🎯 **UX optimizada** con animaciones suaves
+- 🌈 **Tema moderno** con gradientes y efectos
+
+## 🛠️ Stack Tecnológico
+
+### Backend
+- **Spring Boot** 3.3.5
+- **Java** 21
+- **PostgreSQL** / H2 Database
+- **JDBC** para acceso a datos
+- **Maven** como build tool
+
+### Frontend
+- **React** 19.1.1
+- **TypeScript** 5.6.2
+- **Vite** como bundler
+- **Chart.js** para gráficos
+- **CSS3** con diseño moderno
+
+### DevOps
+- **Render** para deployment
+- **Maven Wrapper** incluido
 
 ## 📋 Prerrequisitos
 
-- Java 17 o superior
-- Maven 3.6+
-- Docker y Docker Compose
-- PostgreSQL (opcional para desarrollo local)
+### Para el Backend
+- ☕ **Java 21** o superior
+- 📦 **Maven 3.6+** (o usar ./mvnw incluido)
+- 🐘 **PostgreSQL** (opcional para desarrollo)
 
-## 🏃‍♂️ Ejecución Local
+### Para el Frontend
+- 🟢 **Node.js** 18+ y **npm**
+- 🌐 **Navegador moderno**
 
-### Con Docker Compose (Recomendado)
+## 🏃‍♂️ Guía de Instalación y Ejecución
+
+### 📥 1. Clonar el Repositorio
 
 ```bash
-# Clonar el repositorio
-git clone <repository-url>
-cd api_jdbc
-
-# Ejecutar con Docker Compose
-docker-compose up --build
+git clone https://github.com/sn4yber/menchap-app-api.git
+cd menchap-app-api
 ```
 
-La aplicación estará disponible en: http://localhost:8080
+### � 2. Desarrollo Local (Frontend + Backend)
 
-### Sin Docker
+#### 🖥️ Backend (Spring Boot)
 
 ```bash
-# Configurar base de datos PostgreSQL
-# Crear base de datos 'postgres' con usuario 'postgres' y contraseña '456789'
-
-# Ejecutar la aplicación
+# Ejecutar con Maven Wrapper (recomendado)
 ./mvnw spring-boot:run
+
+# O si tienes Maven instalado globalmente
+mvn spring-boot:run
+
+# Para limpiar y compilar
+./mvnw clean compile
+
+# Para ejecutar tests
+./mvnw test
 ```
 
-## 🐳 Despliegue en Render
+**El backend estará disponible en**: http://localhost:8080
 
-### Opción 1: Usando render.yaml
+#### 🎨 Frontend (React + Vite)
 
+```bash
+# ⚠️ IMPORTANTE: Navegar al directorio del frontend
+cd src/main/resources/static/sofware-contable
+
+# Instalar dependencias (solo la primera vez)
+npm install
+
+# Ejecutar en modo desarrollo
+npm run dev
+
+# Para construir para producción
+npm run build
+
+# Para hacer lint del código
+npm run lint
+```
+
+**El frontend estará disponible en**: http://localhost:5173
+
+> **📍 Nota Importante**: El frontend React está ubicado en `src/main/resources/static/sofware-contable/`. Asegúrate de estar en este directorio antes de ejecutar los comandos npm.
+
+## 🏗️ Estructura del Proyecto
+
+```
+menchap-app-api/
+├── 📁 src/main/java/com/snayber/api_jdbc/
+│   ├── 📄 ApiJdbcApplication.java          # Clase principal de Spring Boot
+│   ├── 📄 AuthController.java              # Controlador de autenticación
+│   ├── 📄 InventarioRestController.java    # API REST para inventario
+│   ├── 📄 LoginController.java             # Controlador de login
+│   ├── 📄 ProductoController.java          # Controlador de productos
+│   ├── 📄 TestController.java              # Endpoints de prueba
+│   ├── 📄 JdbcService.java                 # Servicio de base de datos
+│   ├── 📄 LoginService.java                # Servicio de autenticación
+│   ├── 📄 Producto.java                    # Modelo de datos Producto
+│   ├── 📄 Usuario.java                     # Modelo de datos Usuario
+│   ├── 📁 config/
+│   │   └── 📄 DatabaseConfig.java          # Configuración de BD
+│   └── 📁 repository/
+│       └── 📄 UsuarioRepository.java       # Repositorio de usuarios
+├── 📁 src/main/resources/
+│   ├── 📄 application.properties           # Config desarrollo
+│   ├── 📄 application-prod.properties      # Config producción
+│   ├── 📄 data.sql                         # Datos iniciales
+│   ├── 📄 schema.sql                       # Esquema de BD
+│   └── 📁 static/
+│       ├── 📄 index.html                   # Página principal
+│       └── 📁 sofware-contable/            # 🎨 FRONTEND REACT
+│           ├── 📄 package.json             # Dependencias de Node.js
+│           ├── 📄 vite.config.ts           # Configuración de Vite
+│           ├── 📄 tsconfig.json            # Configuración TypeScript
+│           ├── 📁 src/
+│           │   ├── 📄 main.tsx             # Punto de entrada React
+│           │   ├── 📄 App.tsx              # Componente principal
+│           │   ├── 📄 index.css            # Estilos globales
+│           │   ├── 📁 components/
+│           │   │   ├── 📄 Header.tsx       # Cabecera con hamburguesa
+│           │   │   ├── 📄 SidebarMenu.tsx  # Menú lateral moderno
+│           │   │   ├── 📄 ProductoForm.tsx # Formulario de productos
+│           │   │   └── 📁 pages/
+│           │   │       ├── 📄 Login.tsx        # Página de login
+│           │   │       ├── 📄 Dashboard.tsx    # Dashboard principal
+│           │   │       ├── 📄 Inventario.tsx   # Gestión inventario
+│           │   │       ├── 📄 Ventas.tsx       # Módulo ventas
+│           │   │       ├── 📄 Compras.tsx      # Módulo compras
+│           │   │       ├── 📄 Reportes.tsx     # Reportes
+│           │   │       └── 📄 Configuracion.tsx # Config
+│           │   ├── 📁 types/
+│           │   │   └── 📄 Producto.ts      # Tipos TypeScript
+│           │   └── 📁 assets/
+│           │       └── 📄 menu-icons.tsx   # Iconos del menú
+│           └── 📁 public/                  # Archivos estáticos
+├── 📁 target/                              # Archivos compilados
+├── 📄 pom.xml                              # Configuración Maven
+├── 📄 render.yaml                          # Config deployment
+└── 📄 README.md                            # Esta documentación
+```
+
+## � API REST Endpoints
+
+### 🔐 Autenticación
+```http
+POST /api/login
+POST /auth/login
+```
+
+### 📦 Gestión de Inventario
+```http
+GET    /api/inventario           # Listar todos los productos
+POST   /api/inventario           # Crear nuevo producto
+PUT    /api/inventario/{id}      # Actualizar producto
+DELETE /api/inventario/{id}      # Eliminar producto
+```
+
+### 🛍️ Productos (Controlador Alternativo)
+```http
+GET    /api/productos/listar         # Listar productos
+POST   /api/productos/guardar        # Guardar producto
+PUT    /api/productos/actualizar/{id} # Actualizar producto
+DELETE /api/productos/eliminar/{id}   # Eliminar producto
+```
+
+### 🧪 Testing
+```http
+GET /api/hola                    # Endpoint de prueba
+```
+
+## 📊 Funcionalidades del Frontend
+
+### 🏠 Dashboard
+- � **Estadísticas en tiempo real**: Total productos, valor inventario, productos agotados
+- 📊 **Gráficos interactivos** con Chart.js
+- 🎯 **Acciones rápidas** para gestión
+
+### 📦 Gestión de Inventario
+- ➕ **Botón "Agregar Producto"** transparente junto a filtros
+- 🔍 **Búsqueda y filtrado** por categorías
+- 📝 **Formulario modal** para crear/editar productos
+- 💰 **Precios con decimales** y formato colombiano
+- 📱 **Tabla responsiva** con acciones
+
+### 🎨 Categorías Disponibles
+1. Electrónicos
+2. **Tecnología** 🆕
+3. Ropa
+4. Hogar
+5. Deportes
+6. Libros
+7. Juguetes
+8. Salud
+9. Automotive
+10. Otros
+
+### 🎛️ Navegación
+- 🍔 **Menú hamburguesa** moderno
+- 📱 **Sidebar colapsible** 
+- 🖥️ **Diseño adaptativo**
+
+## ⚙️ Configuración
+
+### 🔧 Variables de Entorno para Producción
+
+```bash
+# Base de datos
+SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/menchap_db
+SPRING_DATASOURCE_USERNAME=tu_usuario
+SPRING_DATASOURCE_PASSWORD=tu_password
+
+# Perfiles
+SPRING_PROFILES_ACTIVE=prod
+
+# Puerto (opcional)
+PORT=8080
+```
+
+### 🏠 Desarrollo Local
+
+El proyecto está configurado para usar **H2** en memoria por defecto para desarrollo.
+
+### 🔑 Credenciales por Defecto
+
+```
+Usuario: admin
+Contraseña: admin123
+```
+
+## � Despliegue
+
+### 📡 Render (Automático)
 1. Conecta tu repositorio a Render
-2. Render detectará automáticamente el archivo `render.yaml`
-3. Se creará automáticamente el servicio web y la base de datos
+2. Render detectará automáticamente `render.yaml`
+3. Se desplegará automáticamente
 
-### Opción 2: Configuración manual
+### 🐋 Docker Local
+```bash
+# Construir imagen
+docker build -t menchap-app .
 
-1. Crea un nuevo **Web Service** en Render
-2. Conecta tu repositorio de GitHub
-3. Configura:
-   - **Environment**: Docker
-   - **Build Command**: (dejar vacío, usar Dockerfile)
-   - **Start Command**: (dejar vacío, usar Dockerfile)
-4. Crea una base de datos PostgreSQL
-5. Configura las variables de entorno:
-   - `SPRING_DATASOURCE_URL`: URL de tu base de datos PostgreSQL
-   - `SPRING_DATASOURCE_USERNAME`: Usuario de la base de datos
-   - `SPRING_DATASOURCE_PASSWORD`: Contraseña de la base de datos
-   - `SPRING_PROFILES_ACTIVE`: prod
-
-## 📚 Endpoints de la API
-
-### Autenticación
-- `POST /api/login` - Iniciar sesión
-- `POST /auth/login` - Autenticación alternativa
-
-### Productos
-- `GET /api/inventario` - Obtener todos los productos
-- `POST /api/inventario` - Crear nuevo producto
-- `PUT /api/inventario/{id}` - Actualizar producto
-- `DELETE /api/inventario/{id}` - Eliminar producto
-
-### Productos (Controlador alternativo)
-- `GET /api/productos/listar` - Listar productos
-- `POST /api/productos/guardar` - Guardar producto
-- `PUT /api/productos/actualizar/{id}` - Actualizar producto
-- `DELETE /api/productos/eliminar/{id}` - Eliminar producto
-
-### Test
-- `GET /api/hola` - Endpoint de prueba
-
-## 🔧 Configuración
-
-### Variables de Entorno
-
-| Variable | Descripción | Valor por defecto |
-|----------|-------------|-------------------|
-| `PORT` | Puerto del servidor | 8080 |
-| `SPRING_DATASOURCE_URL` | URL de la base de datos | jdbc:postgresql://localhost:5432/postgres |
-| `SPRING_DATASOURCE_USERNAME` | Usuario de la base de datos | postgres |
-| `SPRING_DATASOURCE_PASSWORD` | Contraseña de la base de datos | 456789 |
-| `SPRING_PROFILES_ACTIVE` | Perfil de Spring | prod |
-
-### Credenciales por defecto
-
-- **Usuario**: admin
-- **Contraseña**: admin123
-
-## 📁 Estructura del Proyecto
-
-```
-src/
-├── main/
-│   ├── java/com/snayber/api_jdbc/
-│   │   ├── config/
-│   │   │   └── DatabaseConfig.java
-│   │   ├── repository/
-│   │   │   └── UsuarioRepository.java
-│   │   ├── ApiJdbcApplication.java
-│   │   ├── AuthController.java
-│   │   ├── InventarioRestController.java
-│   │   ├── JdbcService.java
-│   │   ├── LoginController.java
-│   │   ├── LoginService.java
-│   │   ├── Producto.java
-│   │   ├── ProductoController.java
-│   │   ├── TestController.java
-│   │   └── Usuario.java
-│   └── resources/
-│       ├── application.properties
-│       ├── application-prod.properties
-│       ├── schema.sql
-│       └── static/
-└── test/
+# Ejecutar contenedor
+docker run -p 8080:8080 menchap-app
 ```
 
-## 🔒 Seguridad
+## 🚀 Scripts de Desarrollo
 
-- Las credenciales de la base de datos se configuran mediante variables de entorno
-- CORS habilitado para desarrollo
-- Logging configurado para producción
-- Manejo de errores optimizado
+### Backend
+```bash
+# Ejecutar aplicación
+./mvnw spring-boot:run
+
+# Compilar sin ejecutar
+./mvnw compile
+
+# Limpiar y compilar
+./mvnw clean compile
+
+# Ejecutar tests
+./mvnw test
+
+# Empaquetar JAR
+./mvnw package
+```
+
+### Frontend
+```bash
+# Navegar al directorio del frontend
+cd src/main/resources/static/sofware-contable
+
+# Modo desarrollo
+npm run dev
+
+# Compilar para producción
+npm run build
+
+# Vista previa de producción
+npm run preview
+
+# Lint y formateo
+npm run lint
+```
 
 ## 🐛 Solución de Problemas
 
-### Error de conexión a la base de datos
-- Verificar que PostgreSQL esté ejecutándose
-- Comprobar las credenciales en las variables de entorno
-- Asegurar que la base de datos esté creada
+### ❌ "mvnw: command not found"
+```bash
+# Dar permisos de ejecución (Linux/Mac)
+chmod +x mvnw
 
-### Error en el build de Docker
-- Verificar que Docker esté instalado y ejecutándose
-- Limpiar imágenes de Docker: `docker system prune -a`
+# Usar Maven instalado globalmente
+mvn spring-boot:run
+```
 
-### Error en Render
-- Verificar las variables de entorno en Render
-- Comprobar los logs de la aplicación
-- Asegurar que la base de datos esté conectada correctamente
+### ❌ Error de conexión a PostgreSQL
+- ✅ Verificar que PostgreSQL esté ejecutándose
+- ✅ Comprobar las credenciales
+- ✅ Usar H2 para desarrollo local
 
-## 📝 Licencia
+### ❌ Frontend no carga
+- ✅ Verificar que estés en `src/main/resources/static/sofware-contable`
+- ✅ Ejecutar `npm install` primero
+- ✅ Comprobar que Node.js 18+ esté instalado
 
-Este proyecto está bajo la Licencia MIT.
+### ❌ Problema con puertos
+- 🔧 Backend: Cambiar puerto en `application.properties`
+- 🔧 Frontend: Vite usa puerto 5173 por defecto
+
+## 🎯 Próximas Funcionalidades
+
+- 📊 **Reportes avanzados** con gráficos
+- 💼 **Módulo de ventas** completo
+- 🧾 **Facturación electrónica**
+- 📱 **App móvil** nativa
+- 🔄 **Sincronización en tiempo real**
+
+## 🤝 Contribución
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## � Licencia
+
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
+
+## 👨‍💻 Autor
+
+**sn4yber** - [GitHub](https://github.com/sn4yber)
+
+---
+
+⭐ **¡Dale una estrella al proyecto si te ha sido útil!** ⭐
