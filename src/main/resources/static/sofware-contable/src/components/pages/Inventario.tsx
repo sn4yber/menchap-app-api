@@ -56,6 +56,9 @@ const Inventario: React.FC = () => {
   // Cargar productos al montar el componente
   useEffect(() => {
     cargarProductos();
+    const onInv = () => cargarProductos();
+    window.addEventListener('inventario:updated', onInv);
+    return () => { window.removeEventListener('inventario:updated', onInv); };
   }, []);
 
   const cargarProductos = async () => {

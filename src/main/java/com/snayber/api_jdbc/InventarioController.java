@@ -24,12 +24,32 @@ public class InventarioController {
     @GetMapping
     public ResponseEntity<List<Producto>> obtenerInventario() {
         try {
+            log.debug("Iniciando obtención de inventario");
             List<Producto> productos = productoRepository.findAll();
             log.info("Obteniendo inventario: {} productos encontrados", productos.size());
+            
+            if (productos.isEmpty()) {
+                log.warn("No se encontraron productos en el inventario");
+                return ResponseEntity.ok(productos); // Retornamos lista vacía, no es un error
+            }
+            
+            // Verificar que todos los productos tengan datos válidos
+            for (Producto producto : productos) {
+                if (producto.getCantidad() == null) {
+                    producto.setCantidad(BigDecimal.ZERO);
+                    log.warn("Producto {} tiene cantidad null, estableciendo a 0", producto.getId());
+                }
+                if (producto.getPrecio() == null) {
+                    producto.setPrecio(BigDecimal.ZERO);
+                    log.warn("Producto {} tiene precio null, estableciendo a 0", producto.getId());
+                }
+            }
+            
             return ResponseEntity.ok(productos);
         } catch (Exception e) {
-            log.error("Error obteniendo inventario: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            log.error("Error obteniendo inventario: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                   .body(List.of()); // Retornar lista vacía en caso de error
         }
     }
 

@@ -28,6 +28,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Builder
 public class Producto {
+
     
     /**
      * Identificador único del producto
