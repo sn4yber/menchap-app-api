@@ -19,6 +19,9 @@ public interface CompraRepository extends JpaRepository<Compra, Long> {
     List<Compra> findByMetodoPago(String metodoPago);
     List<Compra> findByNumeroFactura(String numeroFactura);
 
+    @Query("SELECT COALESCE(SUM(c.costoTotal), 0) FROM Compra c")
+    BigDecimal calcularTotalCompras();
+
     @Query("SELECT COALESCE(SUM(c.costoTotal), 0) FROM Compra c WHERE c.fechaCompra BETWEEN :inicio AND :fin")
     BigDecimal calcularTotalComprasPeriodo(@Param("inicio") LocalDateTime inicio, @Param("fin") LocalDateTime fin);
 

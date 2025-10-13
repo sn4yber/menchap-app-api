@@ -6,7 +6,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * Configuración global de CORS para la aplicación web MVC.
- * Esta clase complementa la configuración de CorsConfig y SimpleCorsFilter.
+ * Usando allowedOriginPatterns para compatibilidad con allowCredentials=true.
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
@@ -14,9 +14,16 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000", "http://localhost:5173", "http://localhost:8080")
+                // Usar allowedOriginPatterns en lugar de allowedOrigins cuando allowCredentials es true
+                .allowedOriginPatterns(
+                    "http://localhost:*",
+                    "https://localhost:*",
+                    "http://127.0.0.1:*",
+                    "https://127.0.0.1:*"
+                )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
-                .allowedHeaders("Authorization", "Content-Type", "Accept", "X-Requested-With")
+                .allowedHeaders("*")
+                .exposedHeaders("*")
                 .allowCredentials(true)
                 .maxAge(3600);
     }

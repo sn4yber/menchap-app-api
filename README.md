@@ -1,53 +1,78 @@
-# 📊 Sistema de Inventario y Contabilidad - MenchaP
+# 📊 LIVO - Sistema de Inventario y Contabilidad
 
-Un sistema completo de gestión de inventario y contabilidad construido con **Spring Boot** (backend) y **React + TypeScript** (frontend), diseñado para pequeñas y medianas empresas.
+> **"La contabilidad en tus manos"**
 
-## 🚀 Característ## 🚀 Despliegue
+Sistema completo de gestión empresarial que integra inventario, punto de venta (POS), contabilidad y reportes. Construido con **Spring Boot** (backend) y **React + TypeScript** (frontend), diseñado específicamente para pequeñas y medianas empresas que buscan digitalizar y optimizar sus procesos.
 
-### 📡 Render (Automático)
-
-1. Conecta tu repositorio a Render
-2. Render detectará automáticamente `render.yaml`
-3. Se desplegará automáticamentes
+## ✨ Características Principales
 
 ### 🏪 Módulo de Inventario
-- ✅ **Gestión completa de productos** (CRUD)
-- 📊 **Dashboard con estadísticas** en tiempo real
-- 🔍 **Búsqueda y filtrado** por categorías
+- ✅ **Gestión completa de productos** (CRUD con operaciones en tiempo real)
+- 📊 **Dashboard con estadísticas** interactivas y métricas clave
+- 🔍 **Búsqueda y filtrado avanzado** por categorías
 - 💰 **Formateo automático** de precios colombianos (COP)
-- 📱 **Diseño responsivo** para móviles y tablets
-- 🎨 **Interfaz moderna** con sidebar hamburguesa
+- 📱 **Diseño 100% responsivo** para móviles, tablets y desktop
+- 🎨 **Interfaz moderna** con sidebar colapsible
+- 📦 **Control de stock** con alertas de productos agotados
+- 🏷️ **Gestión de categorías** predefinidas
+
+### 💼 Módulo de Ventas (Punto de Venta)
+- 🛒 **Sistema POS completo** con carrito de compras
+- 🔍 **Búsqueda rápida** de productos en tiempo real
+- 🧾 **Generación de tickets/facturas** automática
+- 💳 **Múltiples métodos de pago** (Efectivo, Tarjeta, Transferencia, PSE)
+- 📋 **Captura de datos del cliente** (Nombre, Identificación, Teléfono)
+- 📄 **Exportación de tickets** a PNG para impresión
+- 🎯 **Interfaz intuitiva** de dos columnas (productos | carrito)
+- 📊 **Historial de ventas** con búsqueda y filtrado
+- 💵 **Cálculo automático** de totales y descuentos
 
 ### 🔐 Sistema de Autenticación
-- 🔑 **Login seguro** con credenciales
-- 👤 **Gestión de usuarios**
-- 🛡️ **Sesiones persistentes**
+- 🔑 **Login seguro** con validación de credenciales
+- 👤 **Gestión de usuarios** y perfiles
+- 🛡️ **Sesiones persistentes** con seguridad
+- 🚪 **Logout seguro** con confirmación
 
-### 🎨 Interfaz de Usuario
-- 🖥️ **SPA (Single Page Application)** con React
-- 📱 **Mobile-first design**
-- 🎯 **UX optimizada** con animaciones suaves
-- 🌈 **Tema moderno** con gradientes y efectos
+### 🎨 Diseño e Interfaz
+- 🖥️ **SPA (Single Page Application)** con React 19
+- 📱 **Mobile-first responsive design** con breakpoints optimizados
+- 🎨 **Tema azul profesional** (#5b79ff → #4285f4)
+- 🌊 **Gradientes modernos** y efectos visuales
+- ⚡ **Animaciones fluidas** y transiciones suaves
+- 🎯 **UX optimizada** con retroalimentación visual
+- � **Interfaz limpia y profesional** sin emojis
+- 📐 **Touch targets optimizados** (44x44px mínimo)
+- 🖱️ **Interacciones intuitivas** con hover states
 
 ## 🛠️ Stack Tecnológico
 
 ### Backend
+
 - **Spring Boot** 3.3.5
 - **Java** 21
 - **PostgreSQL** / H2 Database
 - **JDBC** para acceso a datos
 - **Maven** como build tool
+- **Spring Web** para RESTful APIs
 
 ### Frontend
+
 - **React** 19.1.1
 - **TypeScript** 5.6.2
-- **Vite** como bundler
-- **Chart.js** para gráficos
-- **CSS3** con diseño moderno
+- **Vite** 6.0+ como bundler ultra-rápido
+- **HTML2Canvas** para exportación de imágenes
+- **CSS3** moderno con:
+  - Flexbox y Grid Layout
+  - Media queries para responsive
+  - Animaciones y transiciones
+  - Gradientes y sombras
+- **TypeScript** para type-safety
 
 ### DevOps
-- **Render** para deployment
+
+- **Render** para deployment automático
 - **Maven Wrapper** incluido
+- **Git** para control de versiones
 
 ## 📋 Prerrequisitos
 

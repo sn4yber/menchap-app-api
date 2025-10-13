@@ -30,14 +30,6 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE Producto p SET p.cantidad = p.cantidad + :add, p.version = p.version + 1 WHERE p.id = :id AND p.version = :version")
-    int incrementCantidadSeguro(@Param("id") Long id, @Param("add") BigDecimal add, @Param("version") Long version);
-    
-    @Modifying
-    @Transactional
     @Query("UPDATE Producto p SET p.cantidad = p.cantidad + :add WHERE p.id = :id")
     int incrementCantidad(@Param("id") Long id, @Param("add") BigDecimal add);
-    
-    @Query("SELECT p.version FROM Producto p WHERE p.id = :id")
-    Optional<Long> findVersionById(@Param("id") Long id);
 }

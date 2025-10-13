@@ -30,8 +30,10 @@ const PurchaseForm: React.FC<Props> = ({ onClose, editing, onSaved }) => {
   useEffect(() => {
     if (editing) {
       setForm({ ...editing })
+      setProductQuery(editing.nombreProducto || '')
     } else {
       setForm(emptyForm)
+      setProductQuery('')
     }
     // load products for selector
     inventarioService.obtenerProductos().then(p => setProducts(p)).catch(e => console.error('Error loading products', e))
@@ -130,63 +132,139 @@ const PurchaseForm: React.FC<Props> = ({ onClose, editing, onSaved }) => {
 
         <div className="producto-form">
           <form onSubmit={handleSubmit}>
-            <div className="form-row">
-              <div style={{position: 'relative'}}>
-                <label className="form-label">Producto</label>
-                <input className="form-input" name="productoId" value={productQuery || form.productoId} onChange={e => { setProductQuery(e.target.value); setShowDropdown(true); }} onBlur={() => setTimeout(() => setShowDropdown(false), 150)} onFocus={() => setShowDropdown(true)} placeholder="Buscar producto por nombre o id" />
-                {showDropdown && filteredProducts.length > 0 && (
-                  <div style={{position: 'absolute', background: 'white', border: '1px solid #e2e8f0', borderRadius: 8, marginTop: 8, zIndex: 1200, left: 0, right: 0}}>
-                    {filteredProducts.map(p => (
-                      <div key={p.id} style={{padding: 8, cursor: 'pointer'}} onMouseDown={() => handleSelectProduct(p)}>
-                        <div style={{fontWeight: 600}}>{p.nombre}</div>
-                        <div style={{fontSize: 12, color: '#718096'}}>#{p.id} • {p.tipo}</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+            <div style={{position: 'relative', marginBottom: 16}}>
+              <label className="form-label">Producto *</label>
+              <input 
+                className="form-input" 
+                name="productoId" 
+                value={productQuery || form.nombreProducto || form.productoId} 
+                onChange={e => { 
+                  setProductQuery(e.target.value); 
+                  setShowDropdown(true); 
+                }} 
+                onBlur={() => setTimeout(() => setShowDropdown(false), 150)} 
+                onFocus={() => setShowDropdown(true)} 
+                placeholder="Buscar producto por nombre o id" 
+              />
+              {showDropdown && filteredProducts.length > 0 && (
+                <div style={{position: 'absolute', background: 'white', border: '1px solid #e2e8f0', borderRadius: 8, marginTop: 4, zIndex: 1200, left: 0, right: 0, maxHeight: 200, overflow: 'auto', boxShadow: '0 4px 6px rgba(0,0,0,0.1)'}}>
+                  {filteredProducts.map(p => (
+                    <div 
+                      key={p.id} 
+                      style={{padding: '12px', cursor: 'pointer', borderBottom: '1px solid #f1f5f9'}} 
+                      onMouseDown={() => handleSelectProduct(p)}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
+                    >
+                      <div style={{fontWeight: 600, color: '#1e293b'}}>{p.nombre}</div>
+                      <div style={{fontSize: 12, color: '#64748b', marginTop: 2}}>ID: {p.id} • Categoría: {p.tipo} • Precio: ${Number(p.precio).toFixed(2)}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {form.productoId && (
+                <div style={{fontSize: 12, color: '#64748b', marginTop: 4}}>
+                  Producto seleccionado: {form.nombreProducto} (ID: {form.productoId})
+                </div>
+              )}
+            </div>
 
+            <div className="form-row" style={{marginBottom: 16}}>
               <div>
-                <label className="form-label">Nombre producto</label>
-                <input className="form-input" name="nombreProducto" value={form.nombreProducto} onChange={handleChange} />
+                <label className="form-label">Cantidad *</label>
+                <input 
+                  className="form-input" 
+                  type="number" 
+                  name="cantidad" 
+                  value={form.cantidad} 
+                  onChange={handleChange}
+                  min="1"
+                  required
+                />
+              </div>
+              <div>
+                <label className="form-label">Costo unitario *</label>
+                <input 
+                  className="form-input" 
+                  type="number" 
+                  step="0.01" 
+                  name="costoUnitario" 
+                  value={form.costoUnitario} 
+                  onChange={handleChange}
+                  min="0"
+                  required
+                />
               </div>
             </div>
 
-            <div className="form-row" style={{marginTop: 12}}>
-              <div>
-                <label className="form-label">Cantidad</label>
-                <input className="form-input" type="number" name="cantidad" value={form.cantidad} onChange={handleChange} />
+            <div style={{marginBottom: 16}}>
+              <label className="form-label">Costo total</label>
+              <div className="form-input" style={{backgroundColor: '#f8fafc', color: '#475569', fontWeight: 600}}>
+                ${(Number(form.cantidad) * Number(form.costoUnitario)).toFixed(2)}
               </div>
-              <div>
-                <label className="form-label">Costo unitario</label>
-                <input className="form-input" type="number" step="0.01" name="costoUnitario" value={form.costoUnitario} onChange={handleChange} />
-              </div>
-            </div>
-
-            <div className="form-row" style={{marginTop: 12}}>
-              <div>
-                <label className="form-label">Proveedor</label>
-                <input className="form-input" name="proveedor" value={form.proveedor} onChange={handleChange} />
-              </div>
-              <div>
-                <label className="form-label">Método pago</label>
-                <input className="form-input" name="metodoPago" value={form.metodoPago} onChange={handleChange} />
+              <div style={{fontSize: 12, color: '#64748b', marginTop: 4}}>
+                Calculado automáticamente: Cantidad × Costo unitario
               </div>
             </div>
 
-            <div style={{marginTop: 12}}>
-              <label className="form-label">Número factura</label>
-              <input className="form-input" name="numeroFactura" value={form.numeroFactura} onChange={handleChange} />
+            <div style={{marginBottom: 16}}>
+              <label className="form-label">Proveedor</label>
+              <input 
+                className="form-input" 
+                name="proveedor" 
+                value={form.proveedor} 
+                onChange={handleChange}
+                placeholder="Nombre del proveedor"
+              />
             </div>
 
-            <div style={{marginTop: 12}}>
+            <div className="form-row" style={{marginBottom: 16}}>
+              <div>
+                <label className="form-label">Método de pago</label>
+                <select 
+                  className="form-input" 
+                  name="metodoPago" 
+                  value={form.metodoPago} 
+                  onChange={handleChange}
+                >
+                  <option value="">Seleccionar...</option>
+                  <option value="Efectivo">Efectivo</option>
+                  <option value="Transferencia">Transferencia</option>
+                  <option value="Tarjeta">Tarjeta</option>
+                  <option value="Crédito">Crédito</option>
+                  <option value="Pagado">Pagado</option>
+                  <option value="Pendiente">Pendiente</option>
+                </select>
+              </div>
+              <div>
+                <label className="form-label">Número de factura</label>
+                <input 
+                  className="form-input" 
+                  name="numeroFactura" 
+                  value={form.numeroFactura} 
+                  onChange={handleChange}
+                  placeholder="Ej: FAC-001"
+                />
+              </div>
+            </div>
+
+            <div style={{marginBottom: 16}}>
               <label className="form-label">Observaciones</label>
-              <textarea className="form-input" style={{height: 100}} name="observaciones" value={form.observaciones} onChange={handleChange} />
+              <textarea 
+                className="form-input" 
+                style={{height: 80, resize: 'vertical'}} 
+                name="observaciones" 
+                value={form.observaciones} 
+                onChange={handleChange}
+                placeholder="Notas adicionales sobre la compra..."
+              />
             </div>
 
-            <div className="modal-actions" style={{display: 'flex', justifyContent: 'flex-end', gap: 12, padding: '16px 24px'}}>
+            <div className="modal-actions" style={{display: 'flex', justifyContent: 'flex-end', gap: 12, padding: '16px 24px', borderTop: '1px solid #e2e8f0', marginTop: 20}}>
               <button type="button" className="btn secondary" onClick={onClose}>Cancelar</button>
-              <button type="submit" className="btn primary" disabled={submitting}>{submitting ? 'Guardando...' : 'Guardar'}</button>
+              <button type="submit" className="btn primary" disabled={submitting}>
+                {submitting ? 'Guardando...' : (editing ? 'Actualizar compra' : 'Registrar compra')}
+              </button>
             </div>
           </form>
         </div>

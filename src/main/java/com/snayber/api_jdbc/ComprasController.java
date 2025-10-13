@@ -4,6 +4,7 @@ import com.snayber.api_jdbc.model.Compra;
 import com.snayber.api_jdbc.model.Producto;
 import com.snayber.api_jdbc.repository.CompraRepository;
 import com.snayber.api_jdbc.repository.ProductoRepository;
+import com.snayber.api_jdbc.exception.InventarioException;
 import java.math.BigDecimal;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/compras")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173", "http://localhost:8080"}, allowCredentials = "true")
 public class ComprasController {
 
     private static final Logger logger = LoggerFactory.getLogger(ComprasController.class);
@@ -51,49 +51,56 @@ public class ComprasController {
     public ResponseEntity<?> registrarCompra(@RequestBody Compra compra) {
         logger.debug("Iniciando registro de compra: {}", compra);
         try {
-            // Ensure required fields
+            // Validar campos requeridos
             if (compra.getNombreProducto() == null || compra.getNombreProducto().isBlank()) {
                 return ResponseEntity.badRequest().body("nombreProducto es obligatorio");
             }
+            if (compra.getCantidad() == null || compra.getCantidad() <= 0) {
+                return ResponseEntity.badRequest().body("cantidad debe ser mayor a 0");
+            }
+            if (compra.getCostoUnitario() == null || compra.getCostoUnitario().compareTo(BigDecimal.ZERO) < 0) {
+                return ResponseEntity.badRequest().body("costoUnitario es obligatorio y debe ser mayor o igual a 0");
+            }
 
-            // Resolve or create product and update inventory
+            // Buscar o crear producto y actualizar inventario
             Producto producto = null;
             if (compra.getProductoId() != null) {
                 producto = productoRepository.findById(compra.getProductoId()).orElse(null);
             }
 
             if (producto == null) {
-                // try find by name (case-insensitive)
+                // Intentar buscar por nombre (sin importar mayúsculas/minúsculas)
                 producto = productoRepository.findByNombreIgnoreCase(compra.getNombreProducto()).orElse(null);
             }
 
             if (producto == null) {
-                // create a new product with the provided name and unit price
+                // Crear nuevo producto con los datos proporcionados
                 producto = new Producto();
                 producto.setNombre(compra.getNombreProducto());
                 producto.setTipo("Compra");
-                producto.setPrecio(compra.getCostoUnitario() != null ? compra.getCostoUnitario() : BigDecimal.ZERO);
-                // set cantidad from compra.cantidad
-                producto.setCantidad(compra.getCantidad() != null ? new BigDecimal(compra.getCantidad()) : BigDecimal.ZERO);
-                logger.info("Creating new product '{}' with initial quantity={} and precio={}", producto.getNombre(), producto.getCantidad(), producto.getPrecio());
+                producto.setPrecio(compra.getCostoUnitario());
+                producto.setCantidad(new BigDecimal(compra.getCantidad()));
+                logger.info("Creando nuevo producto '{}' con cantidad inicial={} y precio={}", 
+                           producto.getNombre(), producto.getCantidad(), producto.getPrecio());
                 producto = productoRepository.save(producto);
-                logger.info("Created product id={} nombre={} cantidad={}", producto.getId(), producto.getNombre(), producto.getCantidad());
+                logger.info("Producto creado: id={} nombre={} cantidad={}", 
+                           producto.getId(), producto.getNombre(), producto.getCantidad());
             } else {
-                // update existing product quantity atomically in DB
-                BigDecimal add = compra.getCantidad() != null ? new BigDecimal(compra.getCantidad()) : BigDecimal.ZERO;
-                logger.info("Incrementing product id={} by {}", producto.getId(), add);
+                // Actualizar cantidad del producto existente de forma atómica
+                BigDecimal cantidadAgregar = new BigDecimal(compra.getCantidad());
+                logger.info("Incrementando producto id={} en {}", producto.getId(), cantidadAgregar);
                 
                 int maxRetries = 3;
                 int retryCount = 0;
                 int updated = 0;
                 
                 while (retryCount < maxRetries && updated <= 0) {
-                    updated = productoRepository.incrementCantidad(producto.getId(), add);
+                    updated = productoRepository.incrementCantidad(producto.getId(), cantidadAgregar);
                     if (updated <= 0) {
                         retryCount++;
-                        logger.warn("Retry {} - No rows updated when incrementing product id={}", retryCount, producto.getId());
+                        logger.warn("Intento {} - No se actualizó el producto id={}", retryCount, producto.getId());
                         if (retryCount < maxRetries) {
-                            Thread.sleep(100 * retryCount); // Pequeña espera exponencial
+                            Thread.sleep(100 * retryCount); // Espera exponencial
                         }
                     }
                 }
@@ -101,44 +108,85 @@ public class ComprasController {
                 if (updated <= 0) {
                     throw new InventarioException("No se pudo actualizar el inventario después de " + maxRetries + " intentos");
                 }
-                // refresh the managed entity from DB so we see the updated cantidad in this persistence context
+                
+                // Refrescar entidad para ver cantidad actualizada
                 try {
                     entityManager.refresh(producto);
                 } catch (Exception ex) {
-                    // if refresh fails, try re-querying
-                    producto = productoRepository.findById(producto.getId()).orElse(producto);
+                    // Si falla el refresh, re-consultar
+                    producto = productoRepository.findById(producto.getId())
+                            .orElseThrow(() -> new InventarioException("Producto no encontrado después de actualizar"));
                 }
-                // optionally update price if provided
-                if (compra.getCostoUnitario() != null) {
+                
+                // Actualizar precio si se proporciona uno nuevo
+                if (compra.getCostoUnitario() != null && compra.getCostoUnitario().compareTo(BigDecimal.ZERO) > 0) {
                     producto.setPrecio(compra.getCostoUnitario());
                     producto = productoRepository.save(producto);
-                    logger.info("Updated price for product id={} to {}", producto.getId(), producto.getPrecio());
+                    logger.info("Precio actualizado para producto id={} a {}", producto.getId(), producto.getPrecio());
                 }
-                logger.info("After increment product id={} cantidad={}", producto.getId(), producto.getCantidad());
+                logger.info("Después de incrementar producto id={} cantidad={}", producto.getId(), producto.getCantidad());
             }
 
-            // associate compra with resolved product id
+            // Asociar compra con el producto
             compra.setProductoId(producto.getId());
+            compra.setNombreProducto(producto.getNombre());
 
-            if (compra.getFechaCompra() == null) compra.setFechaCompra(LocalDateTime.now());
-            if (compra.getCostoTotal() == null) compra.setCostoTotal(compra.calcularCostoTotal());
+            if (compra.getFechaCompra() == null) {
+                compra.setFechaCompra(LocalDateTime.now());
+            }
+            if (compra.getCostoTotal() == null) {
+                compra.setCostoTotal(compra.calcularCostoTotal());
+            }
+            
             Compra saved = compraRepository.save(compra);
+            logger.info("Compra registrada exitosamente: id={}", saved.getId());
             return ResponseEntity.ok(saved);
+            
+        } catch (InventarioException e) {
+            logger.error("Error de inventario al registrar compra: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (InterruptedException e) {
+            logger.error("Interrupción durante retry: {}", e.getMessage());
+            Thread.currentThread().interrupt();
+            return ResponseEntity.status(500).body("Error al procesar la compra: " + e.getMessage());
         } catch (Exception e) {
-            logger.error("Error registering compra: {}", e.getMessage(), e);
-            throw e;
+            logger.error("Error registrando compra: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body("Error al registrar compra: " + e.getMessage());
         }
     }
 
     @PutMapping("/{id}")
+    @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<?> actualizarCompra(@PathVariable Long id, @RequestBody Compra compra) {
         try {
             Optional<Compra> existing = compraRepository.findById(id);
-            if (existing.isEmpty()) return ResponseEntity.notFound().build();
+            if (existing.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            
             Compra e = existing.get();
-            // actualizar campos simples
+            Integer cantidadAnterior = e.getCantidad();
+            Long productoIdAnterior = e.getProductoId();
+            
+            // Si cambia el producto o la cantidad, ajustar inventario
+            if (!productoIdAnterior.equals(compra.getProductoId()) || !cantidadAnterior.equals(compra.getCantidad())) {
+                // Revertir cantidad del producto anterior
+                Producto productoAnterior = productoRepository.findById(productoIdAnterior)
+                        .orElseThrow(() -> new InventarioException("Producto anterior no encontrado"));
+                productoRepository.incrementCantidad(productoAnterior.getId(), new BigDecimal(cantidadAnterior).negate());
+                logger.info("Revertida cantidad {} del producto id={}", cantidadAnterior, productoIdAnterior);
+                
+                // Agregar cantidad al nuevo producto
+                Producto productoNuevo = productoRepository.findById(compra.getProductoId())
+                        .orElseThrow(() -> new InventarioException("Producto nuevo no encontrado"));
+                productoRepository.incrementCantidad(productoNuevo.getId(), new BigDecimal(compra.getCantidad()));
+                logger.info("Agregada cantidad {} al producto id={}", compra.getCantidad(), compra.getProductoId());
+                
+                e.setNombreProducto(productoNuevo.getNombre());
+            }
+            
+            // Actualizar campos
             e.setProductoId(compra.getProductoId());
-            e.setNombreProducto(compra.getNombreProducto());
             e.setCantidad(compra.getCantidad());
             e.setCostoUnitario(compra.getCostoUnitario());
             e.setCostoTotal(compra.getCostoTotal() != null ? compra.getCostoTotal() : compra.calcularCostoTotal());
@@ -146,22 +194,52 @@ public class ComprasController {
             e.setMetodoPago(compra.getMetodoPago());
             e.setNumeroFactura(compra.getNumeroFactura());
             e.setObservaciones(compra.getObservaciones());
-            if (compra.getFechaCompra() != null) e.setFechaCompra(compra.getFechaCompra());
+            
+            if (compra.getFechaCompra() != null) {
+                e.setFechaCompra(compra.getFechaCompra());
+            }
+            
             Compra saved = compraRepository.save(e);
+            logger.info("Compra actualizada exitosamente: id={}", saved.getId());
             return ResponseEntity.ok(saved);
+            
+        } catch (InventarioException ex) {
+            logger.error("Error de inventario: {}", ex.getMessage());
+            return ResponseEntity.badRequest().body(ex.getMessage());
         } catch (Exception ex) {
-            return ResponseEntity.badRequest().body("Error al actualizar compra: " + ex.getMessage());
+            logger.error("Error actualizando compra: {}", ex.getMessage(), ex);
+            return ResponseEntity.status(500).body("Error al actualizar compra: " + ex.getMessage());
         }
     }
 
     @DeleteMapping("/{id}")
+    @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<?> eliminarCompra(@PathVariable Long id) {
         try {
-            if (!compraRepository.existsById(id)) return ResponseEntity.notFound().build();
+            Optional<Compra> compra = compraRepository.findById(id);
+            if (compra.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Revertir el stock del inventario
+            Compra c = compra.get();
+            Producto producto = productoRepository.findById(c.getProductoId())
+                    .orElseThrow(() -> new InventarioException("Producto no encontrado"));
+            
+            BigDecimal cantidadRevertir = new BigDecimal(c.getCantidad()).negate();
+            productoRepository.incrementCantidad(producto.getId(), cantidadRevertir);
+            logger.info("Stock revertido al eliminar compra. Producto id={} cantidad revertida={}", producto.getId(), cantidadRevertir);
+            
             compraRepository.deleteById(id);
+            logger.info("Compra eliminada exitosamente: id={}", id);
             return ResponseEntity.ok().build();
+            
+        } catch (InventarioException e) {
+            logger.error("Error de inventario: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al eliminar compra: " + e.getMessage());
+            logger.error("Error eliminando compra: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body("Error al eliminar compra: " + e.getMessage());
         }
     }
 }

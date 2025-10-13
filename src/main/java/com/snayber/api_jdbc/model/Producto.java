@@ -29,7 +29,6 @@ import java.math.BigDecimal;
 @Builder
 public class Producto {
 
-    
     /**
      * Identificador único del producto
      */
@@ -58,72 +57,95 @@ public class Producto {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal precio;
 
-    @Transient // No se almacena en la base de datos, se calcula
-    private BigDecimal precioTotal;
-
-    public BigDecimal getPrecioTotal() {
-        return calcularValorTotal();
-    }
-
     /**
      * Calcula el valor total del producto (cantidad * precio).
+     * Este método es @Transient para la serialización JSON.
      * 
      * @return BigDecimal representando el valor total, BigDecimal.ZERO si algún valor es nulo
      */
+    @Transient
     public BigDecimal calcularValorTotal() {
-        if (precio != null && cantidad != null) {
-            return precio.multiply(cantidad);
+        try {
+            if (precio != null && cantidad != null) {
+                return precio.multiply(cantidad);
+            }
+        } catch (Exception e) {
+            // En caso de error, retornar ZERO
         }
         return BigDecimal.ZERO;
     }
     
     /**
-     * Getter para valor total - alias de calcularValorTotal()
+     * Getter para valor total - usado por JSON serialization
      *
      * @return BigDecimal representando el valor total
      */
+    @Transient
     public BigDecimal getValorTotal() {
+        return calcularValorTotal();
+    }
+    
+    /**
+     * Getter alternativo para compatibilidad
+     *
+     * @return BigDecimal representando el valor total
+     */
+    @Transient
+    public BigDecimal getPrecioTotal() {
         return calcularValorTotal();
     }
 
     /**
      * Verifica si el producto tiene stock disponible.
      * 
-     * @return true si la cantidad es mayor a 0, false en caso contrario
+     * @return true si hay stock disponible, false en caso contrario
      */
+    @Transient
     public boolean tieneStock() {
         return cantidad != null && cantidad.compareTo(BigDecimal.ZERO) > 0;
     }
-    
+
     /**
-     * Reduce la cantidad del producto en stock.
-     * 
+     * Verifica si el producto tiene stock suficiente para una cantidad dada.
+     *
+     * @param cantidadRequerida cantidad a verificar
+     * @return true si hay stock suficiente, false en caso contrario
+     */
+    @Transient
+    public boolean tieneStockSuficiente(BigDecimal cantidadRequerida) {
+        return cantidad != null && cantidadRequerida != null &&
+               cantidad.compareTo(cantidadRequerida) >= 0;
+    }
+
+    /**
+     * Reduce el stock del producto.
+     *
      * @param cantidadAReducir cantidad a reducir del stock
-     * @throws IllegalArgumentException si la cantidad a reducir es mayor al stock disponible
+     * @throws IllegalArgumentException si la cantidad es inválida o insuficiente
      */
     public void reducirStock(BigDecimal cantidadAReducir) {
         if (cantidadAReducir == null || cantidadAReducir.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("La cantidad a reducir debe ser mayor a 0");
         }
-        
-        if (cantidad.compareTo(cantidadAReducir) < 0) {
-            throw new IllegalArgumentException("No hay suficiente stock disponible");
+        if (!tieneStockSuficiente(cantidadAReducir)) {
+            throw new IllegalArgumentException("Stock insuficiente. Disponible: " + cantidad + ", Solicitado: " + cantidadAReducir);
         }
-        
         this.cantidad = this.cantidad.subtract(cantidadAReducir);
     }
-    
+
     /**
-     * Aumenta la cantidad del producto en stock.
-     * 
-     * @param cantidadAAgregar cantidad a agregar al stock
-     * @throws IllegalArgumentException si la cantidad es negativa o nula
+     * Aumenta el stock del producto.
+     *
+     * @param cantidadAAumentar cantidad a agregar al stock
+     * @throws IllegalArgumentException si la cantidad es inválida
      */
-    public void aumentarStock(BigDecimal cantidadAAgregar) {
-        if (cantidadAAgregar == null || cantidadAAgregar.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("La cantidad a agregar debe ser mayor a 0");
+    public void aumentarStock(BigDecimal cantidadAAumentar) {
+        if (cantidadAAumentar == null || cantidadAAumentar.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("La cantidad a aumentar debe ser mayor a 0");
         }
-        
-        this.cantidad = this.cantidad.add(cantidadAAgregar);
+        if (this.cantidad == null) {
+            this.cantidad = BigDecimal.ZERO;
+        }
+        this.cantidad = this.cantidad.add(cantidadAAumentar);
     }
 }

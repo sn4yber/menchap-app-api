@@ -36,9 +36,25 @@ const Dashboard: React.FC = () => {
 
   const API_BASE_URL = 'http://localhost:8080/api';
 
+  // Función para formatear precios con decimales
+  const formatPrice = (price: number): string => {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }).format(price);
+  };
+
   // Cargar productos al montar el componente
   useEffect(() => {
     cargarProductos();
+    // Escuchar eventos de actualización del inventario
+    const onInventarioUpdate = () => cargarProductos();
+    window.addEventListener('inventario:updated', onInventarioUpdate);
+    return () => {
+      window.removeEventListener('inventario:updated', onInventarioUpdate);
+    };
   }, []);
 
   const cargarProductos = async () => {
@@ -49,6 +65,7 @@ const Dashboard: React.FC = () => {
         throw new Error('Error al cargar productos');
       }
       const data = await response.json();
+      console.log('Productos cargados en Dashboard:', data);
       setProductos(data);
       setError(null);
     } catch (err) {
@@ -62,17 +79,32 @@ const Dashboard: React.FC = () => {
   // Calcular estadísticas reales
   const stats = {
     totalProductos: productos.length,
-    valorInventario: productos.reduce((total, p) => total + (p.cantidad * p.precio), 0),
-    productosAgotados: productos.filter(p => p.cantidad === 0).length,
-    productosConBajoStock: productos.filter(p => p.cantidad > 0 && p.cantidad <= 5).length,
+    valorInventario: productos.reduce((total, p) => {
+      const cantidad = Number(p.cantidad) || 0;
+      const precio = Number(p.precio) || 0;
+      return total + (cantidad * precio);
+    }, 0),
+    productosAgotados: productos.filter(p => Number(p.cantidad) === 0).length,
+    productosConBajoStock: productos.filter(p => {
+      const cantidad = Number(p.cantidad);
+      return cantidad > 0 && cantidad <= 5;
+    }).length,
     categorias: [...new Set(productos.map(p => p.tipo))].length,
-    ventasEstimadas: productos.reduce((total, p) => total + (p.precio * Math.min(p.cantidad, 10)), 0) // Estimación basada en inventario
+    ventasEstimadas: productos.reduce((total, p) => {
+      const cantidad = Number(p.cantidad) || 0;
+      const precio = Number(p.precio) || 0;
+      return total + (precio * Math.min(cantidad, 10));
+    }, 0)
   };
 
   // Obtener productos más vendidos (simulado basado en precio y stock)
   const productosPopulares = productos
-    .filter(p => p.cantidad > 0)
-    .sort((a, b) => (b.precio * (100 - b.cantidad)) - (a.precio * (100 - a.cantidad)))
+    .filter(p => Number(p.cantidad) > 0)
+    .sort((a, b) => {
+      const valorA = Number(a.precio) * (100 - Number(a.cantidad));
+      const valorB = Number(b.precio) * (100 - Number(b.cantidad));
+      return valorB - valorA;
+    })
     .slice(0, 3);
 
   // Preparar datos para gráfico de barras (categorías)
@@ -80,7 +112,11 @@ const Dashboard: React.FC = () => {
   const datosCategoriasValor = categorias.map(categoria => {
     return productos
       .filter(p => p.tipo === categoria)
-      .reduce((total, p) => total + (p.cantidad * p.precio), 0);
+      .reduce((total, p) => {
+        const cantidad = Number(p.cantidad) || 0;
+        const precio = Number(p.precio) || 0;
+        return total + (cantidad * precio);
+      }, 0);
   });
 
   const barChartData = {
@@ -118,7 +154,7 @@ const Dashboard: React.FC = () => {
     datasets: [
       {
         data: [
-          productos.filter(p => p.cantidad > 5).length,
+          productos.filter(p => Number(p.cantidad) > 5).length,
           stats.productosConBajoStock,
           stats.productosAgotados,
         ],
@@ -211,14 +247,14 @@ const Dashboard: React.FC = () => {
 
             <div className="stat-card">
               <h3>Valor del Inventario</h3>
-              <div className="stat-value">${stats.valorInventario.toFixed(2)}</div>
+              <div className="stat-value">{formatPrice(stats.valorInventario)}</div>
               <div className="stat-change negative">{stats.productosAgotados} sin stock</div>
               <div className="stat-detail">{stats.productosConBajoStock} con bajo stock</div>
             </div>
 
             <div className="stat-card">
               <h3>Valor Estimado</h3>
-              <div className="stat-value">${stats.ventasEstimadas.toFixed(2)}</div>
+              <div className="stat-value">{formatPrice(stats.ventasEstimadas)}</div>
               <div className="stat-change positive">Potencial de ventas</div>
               <div className="stat-detail">Basado en stock disponible</div>
             </div>
@@ -259,18 +295,22 @@ const Dashboard: React.FC = () => {
             <h3>Productos con Mayor Valor</h3>
             <div className="product-list">
               {productosPopulares.length > 0 ? (
-                productosPopulares.map(producto => (
-                  <div key={producto.id} className="product-item">
-                    <span className="product-name">{producto.nombre}</span>
-                    <span className="product-sales">{producto.cantidad} en stock</span>
-                    <span className="product-revenue">${(producto.cantidad * producto.precio).toFixed(2)}</span>
-                  </div>
-                ))
+                productosPopulares.map(producto => {
+                  const cantidad = Number(producto.cantidad) || 0;
+                  const precio = Number(producto.precio) || 0;
+                  return (
+                    <div key={producto.id} className="product-item">
+                      <span className="product-name">{producto.nombre}</span>
+                      <span className="product-sales">{cantidad} en stock</span>
+                      <span className="product-revenue">{formatPrice(cantidad * precio)}</span>
+                    </div>
+                  );
+                })
               ) : (
                 <div className="product-item">
                   <span className="product-name">Sin productos disponibles</span>
                   <span className="product-sales">-</span>
-                  <span className="product-revenue">$0.00</span>
+                  <span className="product-revenue">{formatPrice(0)}</span>
                 </div>
               )}
             </div>

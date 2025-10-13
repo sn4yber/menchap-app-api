@@ -18,6 +18,12 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
     List<Venta> findByCliente(String cliente);
     List<Venta> findByMetodoPago(String metodoPago);
 
+    @Query("SELECT COALESCE(SUM(v.precioTotal), 0) FROM Venta v")
+    BigDecimal calcularTotalVentas();
+
+    @Query("SELECT COALESCE(SUM(v.ganancia), 0) FROM Venta v")
+    BigDecimal calcularTotalGanancias();
+
     @Query("SELECT COALESCE(SUM(v.precioTotal), 0) FROM Venta v WHERE v.fechaVenta BETWEEN :inicio AND :fin")
     BigDecimal calcularTotalVentasPeriodo(@Param("inicio") LocalDateTime inicio, @Param("fin") LocalDateTime fin);
 

@@ -7,6 +7,7 @@ import lombok.Builder;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -15,9 +16,12 @@ import java.time.LocalDate;
 public class ResumenFinanciero {
     
     private LocalDate fecha;
+    private LocalDateTime fechaActualizacion;
     private BigDecimal totalVentas;
     private BigDecimal totalCompras;
     private BigDecimal gananciaBruta;
+    private BigDecimal gananciasNetas;
+    private BigDecimal valorInventario;
     private BigDecimal margenPromedio;
     private Integer cantidadVentas;
     private Integer cantidadCompras;

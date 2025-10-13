@@ -19,7 +19,7 @@ const Header: React.FC<HeaderProps> = ({ onReloadDashboard, onNavigateToLogin, o
         </button>
         <div className="logo-section">
           <h1 className="logo clickable-logo" onClick={onReloadDashboard}>Livo</h1>
-          <p className="subtitle">Dashboard Principal</p>
+          <p className="subtitle">la contabilidad en tus manos</p>
         </div>
       </div>
       <div className="user-section" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

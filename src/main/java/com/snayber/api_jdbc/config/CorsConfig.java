@@ -27,9 +27,14 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Configurar orígenes permitidos desde propiedades - sin usar "*" cuando allowCredentials es true
-        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:*", "https://localhost:*"));
-        configuration.setAllowedOrigins(allowedOrigins);
+        // Usar allowedOriginPatterns en lugar de allowedOrigins cuando allowCredentials es true
+        // Esto permite patrones con comodines mientras mantiene credenciales habilitadas
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+            "http://localhost:*", 
+            "https://localhost:*",
+            "http://127.0.0.1:*",
+            "https://127.0.0.1:*"
+        ));
         
         // Métodos HTTP permitidos
         configuration.setAllowedMethods(Arrays.asList(
@@ -38,7 +43,12 @@ public class CorsConfig {
         
         // Headers permitidos
         configuration.setAllowedHeaders(Arrays.asList(
-            "Authorization", "Content-Type", "Accept", "X-Requested-With"
+            "Authorization", "Content-Type", "Accept", "X-Requested-With", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"
+        ));
+        
+        // Headers expuestos al cliente
+        configuration.setExposedHeaders(Arrays.asList(
+            "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"
         ));
         
         // Permitir credenciales (cookies, authorization headers)
