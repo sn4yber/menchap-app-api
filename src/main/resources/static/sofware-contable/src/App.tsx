@@ -6,7 +6,6 @@ import Inventario from './components/pages/Inventario'
 import Compras from './components/pages/Compras'
 import Ventas from './components/pages/Ventas'
 import Reportes from './components/pages/Reportes'
-import Configuracion from './components/pages/Configuracion'
 import Login from './components/pages/Login'
 import { authService } from './services/authService'
 import type { ViewType } from './components/SidebarMenu'
@@ -18,7 +17,6 @@ const VIEWS = {
   COMPRAS: 'COMPRAS',
   VENTAS: 'VENTAS',
   REPORTES: 'REPORTES',
-  CONFIGURACION: 'CONFIGURACION',
 }
 
 function App() {
@@ -70,8 +68,6 @@ function App() {
       MainComponent = <Ventas />; break;
     case 'REPORTES':
       MainComponent = <Reportes />; break;
-    case 'CONFIGURACION':
-      MainComponent = <Configuracion />; break;
     default:
       MainComponent = <Dashboard />;
   }

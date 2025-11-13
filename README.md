@@ -1,390 +1,240 @@
-# 📊 LIVO - Sistema de Inventario y Contabilidad
+# Sistema de Gestión de Inventario y Ventas
 
-> **"La contabilidad en tus manos"**
-
-Sistema completo de gestión empresarial que integra inventario, punto de venta (POS), contabilidad y reportes. Construido con **Spring Boot** (backend) y **React + TypeScript** (frontend), diseñado específicamente para pequeñas y medianas empresas que buscan digitalizar y optimizar sus procesos.
+Sistema completo de gestión empresarial que integra inventario, punto de venta (POS) y reportes en tiempo real. Construido con **Spring Boot** (backend) y **React + TypeScript** (frontend), diseñado para pequeñas y medianas empresas.
 
 ## ✨ Características Principales
 
-### 🏪 Módulo de Inventario
-- ✅ **Gestión completa de productos** (CRUD con operaciones en tiempo real)
-- 📊 **Dashboard con estadísticas** interactivas y métricas clave
-- 🔍 **Búsqueda y filtrado avanzado** por categorías
-- 💰 **Formateo automático** de precios colombianos (COP)
-- 📱 **Diseño 100% responsivo** para móviles, tablets y desktop
-- 🎨 **Interfaz moderna** con sidebar colapsible
-- 📦 **Control de stock** con alertas de productos agotados
-- 🏷️ **Gestión de categorías** predefinidas
+### Gestión de Inventario
 
-### 💼 Módulo de Ventas (Punto de Venta)
-- 🛒 **Sistema POS completo** con carrito de compras
-- 🔍 **Búsqueda rápida** de productos en tiempo real
-- 🧾 **Generación de tickets/facturas** automática
-- 💳 **Múltiples métodos de pago** (Efectivo, Tarjeta, Transferencia, PSE)
-- 📋 **Captura de datos del cliente** (Nombre, Identificación, Teléfono)
-- 📄 **Exportación de tickets** a PNG para impresión
-- 🎯 **Interfaz intuitiva** de dos columnas (productos | carrito)
-- 📊 **Historial de ventas** con búsqueda y filtrado
-- 💵 **Cálculo automático** de totales y descuentos
+- Gestión completa de productos (CRUD)
+- Dashboard con estadísticas y métricas en tiempo real
+- Búsqueda y filtrado por categorías
+- Control de stock con alertas de productos agotados
+- Gestión de categorías predefinidas
 
-### 🔐 Sistema de Autenticación
-- 🔑 **Login seguro** con validación de credenciales
-- 👤 **Gestión de usuarios** y perfiles
-- 🛡️ **Sesiones persistentes** con seguridad
-- 🚪 **Logout seguro** con confirmación
+### Punto de Venta (POS)
 
-### 🎨 Diseño e Interfaz
-- 🖥️ **SPA (Single Page Application)** con React 19
-- 📱 **Mobile-first responsive design** con breakpoints optimizados
-- 🎨 **Tema azul profesional** (#5b79ff → #4285f4)
-- 🌊 **Gradientes modernos** y efectos visuales
-- ⚡ **Animaciones fluidas** y transiciones suaves
-- 🎯 **UX optimizada** con retroalimentación visual
-- � **Interfaz limpia y profesional** sin emojis
-- 📐 **Touch targets optimizados** (44x44px mínimo)
-- 🖱️ **Interacciones intuitivas** con hover states
+- Sistema POS completo con carrito de compras
+- Búsqueda rápida de productos
+- Generación de tickets/facturas automática
+- Múltiples métodos de pago (Efectivo, Tarjeta, Transferencia, PSE)
+- Captura de datos del cliente
+- Exportación de tickets a PNG para impresión
+- Historial de ventas con búsqueda y filtrado
+
+### Gestión de Compras
+
+- Registro de compras con proveedores
+- Control de inventario actualizado automáticamente
+- Historial de compras
+
+### Reportes y Analytics
+
+- Dashboard consolidado con caché optimizado
+- Gráficos interactivos con Chart.js
+- Productos más vendidos
+- Alertas de inventario
+- Tendencias de ventas
+- Análisis de rentabilidad
+
+### Diseño e Interfaz
+
+- SPA (Single Page Application) con React
+- Diseño 100% responsivo (móvil, tablet, desktop)
+- Interfaz moderna con sidebar colapsible
+- Animaciones fluidas y transiciones suaves
+- UX optimizada con retroalimentación visual
 
 ## 🛠️ Stack Tecnológico
 
 ### Backend
 
-- **Spring Boot** 3.3.5
-- **Java** 21
-- **PostgreSQL** / H2 Database
-- **JDBC** para acceso a datos
-- **Maven** como build tool
-- **Spring Web** para RESTful APIs
+- Spring Boot 3.3.5
+- Java 21
+- Spring JPA con repositorios
+- PostgreSQL / H2 Database
+- Caffeine Cache (optimización de rendimiento)
+- Maven como build tool
 
 ### Frontend
 
-- **React** 19.1.1
-- **TypeScript** 5.6.2
-- **Vite** 6.0+ como bundler ultra-rápido
-- **HTML2Canvas** para exportación de imágenes
-- **CSS3** moderno con:
-  - Flexbox y Grid Layout
-  - Media queries para responsive
-  - Animaciones y transiciones
-  - Gradientes y sombras
-- **TypeScript** para type-safety
-
-### DevOps
-
-- **Render** para deployment automático
-- **Maven Wrapper** incluido
-- **Git** para control de versiones
+- React 18+
+- TypeScript 5.6+
+- Vite 6.0+ (bundler)
+- Chart.js (gráficos)
+- HTML2Canvas (exportación de imágenes)
+- CSS3 moderno con Flexbox y Grid
 
 ## 📋 Prerrequisitos
 
-### Para el Backend
-- ☕ **Java 21** o superior
-- 📦 **Maven 3.6+** (o usar ./mvnw incluido)
-- 🐘 **PostgreSQL** (opcional para desarrollo)
+### Backend
 
-### Para el Frontend
-- 🟢 **Node.js** 18+ y **npm**
-- 🌐 **Navegador moderno**
+- Java 21 o superior
+- Maven 3.6+ (o usar ./mvnw incluido)
+- PostgreSQL (opcional, usa H2 en desarrollo)
 
-## 🏃‍♂️ Guía de Instalación y Ejecución
+### Frontend
 
-### 📥 1. Clonar el Repositorio
+- Node.js 18+ y npm
+- Navegador moderno
+
+## 🚀 Instalación y Ejecución
+
+### 1. Clonar el Repositorio
 
 ```bash
-git clone https://github.com/sn4yber/menchap-app-api.git
+git clone <repository-url>
 cd menchap-app-api
 ```
 
-### � 2. Desarrollo Local (Frontend + Backend)
-
-#### 🖥️ Backend (Spring Boot)
+### 2. Backend (Spring Boot)
 
 ```bash
-# Ejecutar con Maven Wrapper (recomendado)
+# Ejecutar con Maven Wrapper
 ./mvnw spring-boot:run
 
-# O si tienes Maven instalado globalmente
-mvn spring-boot:run
-
-# Para limpiar y compilar
-./mvnw clean compile
-
-# Para ejecutar tests
-./mvnw test
+# El backend estará en: http://localhost:8080
 ```
 
-**El backend estará disponible en**: http://localhost:8080
-
-#### 🎨 Frontend (React + Vite)
+### 3. Frontend (React + Vite)
 
 ```bash
-# ⚠️ IMPORTANTE: Navegar al directorio del frontend
+# Navegar al directorio del frontend
 cd src/main/resources/static/sofware-contable
 
-# Instalar dependencias (solo la primera vez)
+# Instalar dependencias
 npm install
 
 # Ejecutar en modo desarrollo
 npm run dev
 
-# Para construir para producción
-npm run build
-
-# Para hacer lint del código
-npm run lint
+# El frontend estará en: http://localhost:5173
 ```
 
-**El frontend estará disponible en**: http://localhost:5173
+**Nota**: El frontend está en `src/main/resources/static/sofware-contable/`
 
-> **📍 Nota Importante**: El frontend React está ubicado en `src/main/resources/static/sofware-contable/`. Asegúrate de estar en este directorio antes de ejecutar los comandos npm.
+## 📁 Estructura del Proyecto
 
-## 🏗️ Estructura del Proyecto
-
-```
+```text
 menchap-app-api/
-├── 📁 src/main/java/com/snayber/api_jdbc/
-│   ├── 📄 ApiJdbcApplication.java          # Clase principal de Spring Boot
-│   ├── 📄 AuthController.java              # Controlador de autenticación
-│   ├── 📄 InventarioRestController.java    # API REST para inventario
-│   ├── 📄 LoginController.java             # Controlador de login
-│   ├── 📄 ProductoController.java          # Controlador de productos
-│   ├── 📄 TestController.java              # Endpoints de prueba
-│   ├── 📄 JdbcService.java                 # Servicio de base de datos
-│   ├── 📄 LoginService.java                # Servicio de autenticación
-│   ├── 📄 Producto.java                    # Modelo de datos Producto
-│   ├── 📄 Usuario.java                     # Modelo de datos Usuario
-│   ├── 📁 config/
-│   │   └── 📄 DatabaseConfig.java          # Configuración de BD
-│   └── 📁 repository/
-│       └── 📄 UsuarioRepository.java       # Repositorio de usuarios
-├── 📁 src/main/resources/
-│   ├── 📄 application.properties           # Config desarrollo
-│   ├── 📄 application-prod.properties      # Config producción
-│   ├── 📄 data.sql                         # Datos iniciales
-│   ├── 📄 schema.sql                       # Esquema de BD
-│   └── 📁 static/
-│       ├── 📄 index.html                   # Página principal
-│       └── 📁 sofware-contable/            # 🎨 FRONTEND REACT
-│           ├── 📄 package.json             # Dependencias de Node.js
-│           ├── 📄 vite.config.ts           # Configuración de Vite
-│           ├── 📄 tsconfig.json            # Configuración TypeScript
-│           ├── 📁 src/
-│           │   ├── 📄 main.tsx             # Punto de entrada React
-│           │   ├── 📄 App.tsx              # Componente principal
-│           │   ├── 📄 index.css            # Estilos globales
-│           │   ├── 📁 components/
-│           │   │   ├── 📄 Header.tsx       # Cabecera con hamburguesa
-│           │   │   ├── 📄 SidebarMenu.tsx  # Menú lateral moderno
-│           │   │   ├── 📄 ProductoForm.tsx # Formulario de productos
-│           │   │   └── 📁 pages/
-│           │   │       ├── 📄 Login.tsx        # Página de login
-│           │   │       ├── 📄 Dashboard.tsx    # Dashboard principal
-│           │   │       ├── 📄 Inventario.tsx   # Gestión inventario
-│           │   │       ├── 📄 Ventas.tsx       # Módulo ventas
-│           │   │       ├── 📄 Compras.tsx      # Módulo compras
-│           │   │       ├── 📄 Reportes.tsx     # Reportes
-│           │   │       └── 📄 Configuracion.tsx # Config
-│           │   ├── 📁 types/
-│           │   │   └── 📄 Producto.ts      # Tipos TypeScript
-│           │   └── 📁 assets/
-│           │       └── 📄 menu-icons.tsx   # Iconos del menú
-│           └── 📁 public/                  # Archivos estáticos
-├── 📁 target/                              # Archivos compilados
-├── 📄 pom.xml                              # Configuración Maven
-├── 📄 render.yaml                          # Config deployment
-└── 📄 README.md                            # Esta documentación
+├── src/main/java/com/snayber/api_jdbc/
+│   ├── *Controller.java              # Controladores REST
+│   ├── config/                       # Configuración (DB, Cache)
+│   ├── dto/                          # Data Transfer Objects
+│   ├── model/                        # Entidades JPA
+│   ├── repository/                   # Repositorios JPA
+│   ├── service/                      # Lógica de negocio
+│   └── mapper/                       # Mapeo de entidades
+├── src/main/resources/
+│   ├── application.properties        # Configuración
+│   └── static/sofware-contable/      # Frontend React
+│       ├── src/
+│       │   ├── components/           # Componentes React
+│       │   ├── pages/                # Páginas
+│       │   ├── types/                # Tipos TypeScript
+│       │   └── hooks/                # Custom hooks
+│       └── package.json
+├── pom.xml                           # Dependencias Maven
+└── README.md
 ```
 
-## � API REST Endpoints
+## 🔌 API REST Endpoints
 
-### 🔐 Autenticación
+### Autenticación
+
 ```http
 POST /api/login
 POST /auth/login
 ```
 
-### 📦 Gestión de Inventario
+### Inventario
+
 ```http
-GET    /api/inventario           # Listar todos los productos
-POST   /api/inventario           # Crear nuevo producto
+GET    /api/inventario           # Listar productos
+POST   /api/inventario           # Crear producto
 PUT    /api/inventario/{id}      # Actualizar producto
 DELETE /api/inventario/{id}      # Eliminar producto
 ```
 
-### 🛍️ Productos (Controlador Alternativo)
+### Ventas
+
 ```http
-GET    /api/productos/listar         # Listar productos
-POST   /api/productos/guardar        # Guardar producto
-PUT    /api/productos/actualizar/{id} # Actualizar producto
-DELETE /api/productos/eliminar/{id}   # Eliminar producto
+GET  /api/ventas                 # Listar ventas
+POST /api/ventas                 # Registrar venta
 ```
 
-### 🧪 Testing
+### Compras
+
 ```http
-GET /api/hola                    # Endpoint de prueba
+GET  /api/compras                # Listar compras
+POST /api/compras                # Registrar compra
 ```
 
-## 📊 Funcionalidades del Frontend
+### Reportes
 
-### 🏠 Dashboard
-- � **Estadísticas en tiempo real**: Total productos, valor inventario, productos agotados
-- 📊 **Gráficos interactivos** con Chart.js
-- 🎯 **Acciones rápidas** para gestión
-
-### 📦 Gestión de Inventario
-- ➕ **Botón "Agregar Producto"** transparente junto a filtros
-- 🔍 **Búsqueda y filtrado** por categorías
-- 📝 **Formulario modal** para crear/editar productos
-- 💰 **Precios con decimales** y formato colombiano
-- 📱 **Tabla responsiva** con acciones
-
-### 🎨 Categorías Disponibles
-1. Electrónicos
-2. **Tecnología** 🆕
-3. Ropa
-4. Hogar
-5. Deportes
-6. Libros
-7. Juguetes
-8. Salud
-9. Automotive
-10. Otros
-
-### 🎛️ Navegación
-- 🍔 **Menú hamburguesa** moderno
-- 📱 **Sidebar colapsible** 
-- 🖥️ **Diseño adaptativo**
+```http
+GET /api/reportes/dashboard-completo  # Dashboard consolidado (cached)
+```
 
 ## ⚙️ Configuración
 
-### 🔧 Variables de Entorno para Producción
+### Base de Datos
 
-```bash
-# Base de datos
-SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/menchap_db
-SPRING_DATASOURCE_USERNAME=tu_usuario
-SPRING_DATASOURCE_PASSWORD=tu_password
+El proyecto usa **H2** en memoria por defecto para desarrollo. Para producción, configura PostgreSQL:
 
-# Perfiles
-SPRING_PROFILES_ACTIVE=prod
-
-# Puerto (opcional)
-PORT=8080
+```properties
+# application-prod.properties
+spring.datasource.url=jdbc:postgresql://host:5432/db_name
+spring.datasource.username=${DB_USER}
+spring.datasource.password=${DB_PASSWORD}
 ```
 
-### 🏠 Desarrollo Local
+### Credenciales
 
-El proyecto está configurado para usar **H2** en memoria por defecto para desarrollo.
+Configura las credenciales de acceso en `application.properties` o variables de entorno.
 
-### 🔑 Credenciales por Defecto
-
-```
-Usuario: admin
-Contraseña: admin123
-```
-
-## � Despliegue
-
-### 📡 Render (Automático)
-1. Conecta tu repositorio a Render
-2. Render detectará automáticamente `render.yaml`
-3. Se desplegará automáticamente
-
-### 🐋 Docker Local
-```bash
-# Construir imagen
-docker build -t menchap-app .
-
-# Ejecutar contenedor
-docker run -p 8080:8080 menchap-app
-```
-
-## 🚀 Scripts de Desarrollo
+## � Scripts Útiles
 
 ### Backend
+
 ```bash
-# Ejecutar aplicación
-./mvnw spring-boot:run
-
-# Compilar sin ejecutar
-./mvnw compile
-
-# Limpiar y compilar
-./mvnw clean compile
-
-# Ejecutar tests
-./mvnw test
-
-# Empaquetar JAR
-./mvnw package
+./mvnw spring-boot:run     # Ejecutar aplicación
+./mvnw clean compile       # Compilar
+./mvnw test                # Ejecutar tests
+./mvnw package             # Empaquetar JAR
 ```
 
 ### Frontend
+
 ```bash
-# Navegar al directorio del frontend
 cd src/main/resources/static/sofware-contable
-
-# Modo desarrollo
-npm run dev
-
-# Compilar para producción
-npm run build
-
-# Vista previa de producción
-npm run preview
-
-# Lint y formateo
-npm run lint
+npm run dev                # Modo desarrollo
+npm run build              # Compilar para producción
+npm run lint               # Lint del código
 ```
 
 ## 🐛 Solución de Problemas
 
-### ❌ "mvnw: command not found"
-```bash
-# Dar permisos de ejecución (Linux/Mac)
-chmod +x mvnw
+### "mvnw: command not found"
 
-# Usar Maven instalado globalmente
-mvn spring-boot:run
+```bash
+chmod +x mvnw              # Dar permisos de ejecución
 ```
 
-### ❌ Error de conexión a PostgreSQL
-- ✅ Verificar que PostgreSQL esté ejecutándose
-- ✅ Comprobar las credenciales
-- ✅ Usar H2 para desarrollo local
+### Frontend no carga
 
-### ❌ Frontend no carga
-- ✅ Verificar que estés en `src/main/resources/static/sofware-contable`
-- ✅ Ejecutar `npm install` primero
-- ✅ Comprobar que Node.js 18+ esté instalado
-
-### ❌ Problema con puertos
-- 🔧 Backend: Cambiar puerto en `application.properties`
-- 🔧 Frontend: Vite usa puerto 5173 por defecto
-
-## 🎯 Próximas Funcionalidades
-
-- 📊 **Reportes avanzados** con gráficos
-- 💼 **Módulo de ventas** completo
-- 🧾 **Facturación electrónica**
-- 📱 **App móvil** nativa
-- 🔄 **Sincronización en tiempo real**
-
-## 🤝 Contribución
-
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+- Verificar que estés en `src/main/resources/static/sofware-contable`
+- Ejecutar `npm install` primero
+- Comprobar que Node.js 18+ esté instalado
 
 ## � Licencia
 
-Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
+Este proyecto está bajo la Licencia MIT.
 
-## 👨‍💻 Autor
+## � Estado del Proyecto
 
-**sn4yber** - [GitHub](https://github.com/sn4yber)
+✅ **Desarrollo completado** - Sistema funcional y en producción.
 
 ---
 
-⭐ **¡Dale una estrella al proyecto si te ha sido útil!** ⭐
+⭐ Si te ha sido útil, considera darle una estrella al proyecto.

@@ -33,8 +33,8 @@ public class ContabilidadService {
             }
             
             // Reducir stock automáticamente
-            if (producto.getCantidad().compareTo(new BigDecimal(venta.getCantidad())) >= 0) {
-                producto.reducirStock(new BigDecimal(venta.getCantidad()));
+            if (producto.getCantidad().compareTo(venta.getCantidad()) >= 0) {
+                producto.reducirStock(venta.getCantidad());
                 productoRepository.save(producto);
             } else {
                 throw new IllegalArgumentException("Stock insuficiente para la venta");
@@ -47,7 +47,7 @@ public class ContabilidadService {
         }
 
         // Calcular totales automáticamente
-        venta.setPrecioTotal(venta.getPrecioUnitario().multiply(new BigDecimal(venta.getCantidad())));
+        venta.setPrecioTotal(venta.getPrecioUnitario().multiply(venta.getCantidad()));
         venta.setGanancia(venta.calcularGanancia());
 
         log.info("Registrando venta: {} unidades de {}", venta.getCantidad(), venta.getNombreProducto());
@@ -60,7 +60,7 @@ public class ContabilidadService {
             compra.setNombreProducto(producto.getNombre());
             
             // Aumentar stock automáticamente
-            producto.aumentarStock(new BigDecimal(compra.getCantidad()));
+            producto.aumentarStock(compra.getCantidad());
             productoRepository.save(producto);
         });
         

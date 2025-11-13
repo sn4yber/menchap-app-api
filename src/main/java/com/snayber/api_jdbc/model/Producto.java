@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Builder;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * Entidad que representa un producto en el sistema de inventario.
@@ -19,7 +20,7 @@ import java.math.BigDecimal;
  * - LSP: Puede ser sustituida por cualquier implementación de producto
  * 
  * @author Sistema de Inventario
- * @version 1.0
+ * @version 2.0
  */
 @Entity
 @Table(name = "productos")
@@ -29,37 +30,78 @@ import java.math.BigDecimal;
 @Builder
 public class Producto {
 
-    /**
-     * Identificador único del producto
-     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    /**
-     * Nombre del producto
-     */
     @Column(nullable = false, length = 100)
     private String nombre;
     
-    /**
-     * Tipo o categoría del producto
-     */
     @Column(nullable = false, length = 50)
     private String tipo;
+
+    @Column(name = "categoria_id")
+    private Long categoriaId;
     
-    /**
-     * Cantidad disponible del producto
-     */
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal cantidad;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal precio;
 
+    @Column(name = "costo_promedio", precision = 10, scale = 2)
+    private BigDecimal costoPromedio;
+
+    @Builder.Default
+    @Column(name = "stock_minimo", precision = 10, scale = 2)
+    private BigDecimal stockMinimo = new BigDecimal("10");
+
+    @Builder.Default
+    @Column(name = "stock_maximo", precision = 10, scale = 2)
+    private BigDecimal stockMaximo = new BigDecimal("1000");
+
+    @Column(length = 50, unique = true)
+    private String sku;
+
+    @Column(columnDefinition = "TEXT")
+    private String descripcion;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean activo = true;
+
+    @Column(name = "fecha_creacion")
+    private LocalDateTime fechaCreacion;
+
+    @Column(name = "fecha_actualizacion")
+    private LocalDateTime fechaActualizacion;
+
+    @PrePersist
+    protected void onCreate() {
+        if (fechaCreacion == null) {
+            fechaCreacion = LocalDateTime.now();
+        }
+        if (fechaActualizacion == null) {
+            fechaActualizacion = LocalDateTime.now();
+        }
+        if (activo == null) {
+            activo = true;
+        }
+        if (stockMinimo == null) {
+            stockMinimo = new BigDecimal("10");
+        }
+        if (stockMaximo == null) {
+            stockMaximo = new BigDecimal("1000");
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        fechaActualizacion = LocalDateTime.now();
+    }
+
     /**
      * Calcula el valor total del producto (cantidad * precio).
-     * Este método es @Transient para la serialización JSON.
      * 
      * @return BigDecimal representando el valor total, BigDecimal.ZERO si algún valor es nulo
      */
@@ -75,30 +117,57 @@ public class Producto {
         return BigDecimal.ZERO;
     }
     
-    /**
-     * Getter para valor total - usado por JSON serialization
-     *
-     * @return BigDecimal representando el valor total
-     */
     @Transient
     public BigDecimal getValorTotal() {
         return calcularValorTotal();
     }
     
-    /**
-     * Getter alternativo para compatibilidad
-     *
-     * @return BigDecimal representando el valor total
-     */
     @Transient
     public BigDecimal getPrecioTotal() {
         return calcularValorTotal();
     }
 
     /**
+     * Calcula el valor del inventario al costo promedio
+     */
+    @Transient
+    public BigDecimal calcularValorCosto() {
+        if (costoPromedio != null && cantidad != null) {
+            return costoPromedio.multiply(cantidad);
+        }
+        return BigDecimal.ZERO;
+    }
+
+    /**
+     * Calcula la ganancia potencial del inventario
+     */
+    @Transient
+    public BigDecimal calcularGananciaPotencial() {
+        if (precio != null && costoPromedio != null && cantidad != null) {
+            return precio.subtract(costoPromedio).multiply(cantidad);
+        }
+        return BigDecimal.ZERO;
+    }
+
+    /**
+     * Obtiene el estado del stock
+     */
+    @Transient
+    public String getEstadoStock() {
+        if (cantidad == null || cantidad.compareTo(BigDecimal.ZERO) == 0) {
+            return "SIN_STOCK";
+        }
+        if (stockMinimo != null && cantidad.compareTo(stockMinimo) < 0) {
+            return "STOCK_BAJO";
+        }
+        if (stockMaximo != null && cantidad.compareTo(stockMaximo) > 0) {
+            return "SOBRESTOCK";
+        }
+        return "NORMAL";
+    }
+
+    /**
      * Verifica si el producto tiene stock disponible.
-     * 
-     * @return true si hay stock disponible, false en caso contrario
      */
     @Transient
     public boolean tieneStock() {
@@ -107,9 +176,6 @@ public class Producto {
 
     /**
      * Verifica si el producto tiene stock suficiente para una cantidad dada.
-     *
-     * @param cantidadRequerida cantidad a verificar
-     * @return true si hay stock suficiente, false en caso contrario
      */
     @Transient
     public boolean tieneStockSuficiente(BigDecimal cantidadRequerida) {
@@ -118,10 +184,15 @@ public class Producto {
     }
 
     /**
+     * Verifica si el stock está bajo
+     */
+    @Transient
+    public boolean tieneStockBajo() {
+        return stockMinimo != null && cantidad != null && cantidad.compareTo(stockMinimo) < 0;
+    }
+
+    /**
      * Reduce el stock del producto.
-     *
-     * @param cantidadAReducir cantidad a reducir del stock
-     * @throws IllegalArgumentException si la cantidad es inválida o insuficiente
      */
     public void reducirStock(BigDecimal cantidadAReducir) {
         if (cantidadAReducir == null || cantidadAReducir.compareTo(BigDecimal.ZERO) <= 0) {
@@ -135,9 +206,6 @@ public class Producto {
 
     /**
      * Aumenta el stock del producto.
-     *
-     * @param cantidadAAumentar cantidad a agregar al stock
-     * @throws IllegalArgumentException si la cantidad es inválida
      */
     public void aumentarStock(BigDecimal cantidadAAumentar) {
         if (cantidadAAumentar == null || cantidadAAumentar.compareTo(BigDecimal.ZERO) <= 0) {

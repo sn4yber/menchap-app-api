@@ -24,6 +24,10 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     List<Producto> findByPrecioGreaterThan(BigDecimal precio);
     List<Producto> findByPrecioLessThan(BigDecimal precio);
     List<Producto> findByPrecioBetween(BigDecimal precioMin, BigDecimal precioMax);
+    
+    // Métodos para reportes
+    Long countByCantidadGreaterThan(BigDecimal cantidad);
+    Long countByCantidadLessThanEqual(BigDecimal cantidad);
 
     @Query("SELECT COALESCE(SUM(p.cantidad * p.precio), 0) FROM Producto p")
     BigDecimal calcularValorTotalInventario();

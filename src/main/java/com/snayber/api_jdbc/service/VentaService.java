@@ -66,7 +66,8 @@ public class VentaService {
         Producto prod = producto.get();
 
         // Convertir cantidad de venta a BigDecimal para comparar con el stock del producto
-        BigDecimal cantidadVenta = BigDecimal.valueOf(venta.getCantidad());
+    // cantidad ya es BigDecimal en el modelo
+    BigDecimal cantidadVenta = venta.getCantidad();
 
         // Validar stock disponible
         if (prod.getCantidad().compareTo(cantidadVenta) < 0) {
@@ -85,11 +86,11 @@ public class VentaService {
         venta.setFechaVenta(LocalDateTime.now());
 
         // Calcular precio total
-        BigDecimal precioTotal = venta.getPrecioUnitario().multiply(BigDecimal.valueOf(venta.getCantidad()));
+    BigDecimal precioTotal = venta.getPrecioUnitario().multiply(venta.getCantidad());
         venta.setPrecioTotal(precioTotal);
 
         // Calcular ganancia
-        BigDecimal costoTotal = venta.getCostoUnitario().multiply(BigDecimal.valueOf(venta.getCantidad()));
+    BigDecimal costoTotal = venta.getCostoUnitario().multiply(venta.getCantidad());
         BigDecimal ganancia = precioTotal.subtract(costoTotal);
         venta.setGanancia(ganancia);
 
@@ -111,7 +112,7 @@ public class VentaService {
             Optional<Producto> productoOpt = productoRepository.findById(venta.getProductoId());
             if (productoOpt.isPresent()) {
                 Producto producto = productoOpt.get();
-                BigDecimal cantidadVenta = BigDecimal.valueOf(venta.getCantidad());
+                BigDecimal cantidadVenta = venta.getCantidad();
                 producto.setCantidad(producto.getCantidad().add(cantidadVenta));
                 productoRepository.save(producto);
             }

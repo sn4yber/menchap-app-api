@@ -26,8 +26,8 @@ public class Compra {
     @Column(name = "nombre_producto", nullable = false, length = 100)
     private String nombreProducto;
 
-    @Column(nullable = false)
-    private Integer cantidad;
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal cantidad;
 
     @Column(name = "costo_unitario", nullable = false, precision = 10, scale = 2)
     private BigDecimal costoUnitario;
@@ -38,21 +38,46 @@ public class Compra {
     @Column(length = 100)
     private String proveedor;
 
+    @Column(name = "numero_factura", length = 50)
+    private String numeroFactura;
+
     @Column(name = "metodo_pago", length = 50)
     private String metodoPago;
 
     @Column(name = "fecha_compra", nullable = false)
     private LocalDateTime fechaCompra;
 
-    @Column(name = "numero_factura", length = 50)
-    private String numeroFactura;
+    @Column(name = "fecha_entrega")
+    private LocalDateTime fechaEntrega;
 
     @Column(columnDefinition = "TEXT")
     private String observaciones;
+
+    @Column(name = "usuario_id")
+    private Long usuarioId;
+
+    @Column(length = 20)
+    private String estado = "RECIBIDA";
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+        if (fechaCompra == null) {
+            fechaCompra = LocalDateTime.now();
+        }
+        if (estado == null) {
+            estado = "RECIBIDA";
+        }
+    }
     
     public BigDecimal calcularCostoTotal() {
         if (costoUnitario != null && cantidad != null) {
-            return costoUnitario.multiply(new BigDecimal(cantidad));
+            return costoUnitario.multiply(cantidad);
         }
         return BigDecimal.ZERO;
     }

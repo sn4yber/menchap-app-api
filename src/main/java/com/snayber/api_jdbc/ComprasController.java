@@ -48,6 +48,7 @@ public class ComprasController {
 
     @PostMapping
     @Transactional(rollbackFor = Exception.class)
+    @org.springframework.cache.annotation.CacheEvict(value = "dashboardCompleto", allEntries = true)
     public ResponseEntity<?> registrarCompra(@RequestBody Compra compra) {
         logger.debug("Iniciando registro de compra: {}", compra);
         try {
@@ -55,7 +56,7 @@ public class ComprasController {
             if (compra.getNombreProducto() == null || compra.getNombreProducto().isBlank()) {
                 return ResponseEntity.badRequest().body("nombreProducto es obligatorio");
             }
-            if (compra.getCantidad() == null || compra.getCantidad() <= 0) {
+            if (compra.getCantidad() == null || compra.getCantidad().compareTo(BigDecimal.ZERO) <= 0) {
                 return ResponseEntity.badRequest().body("cantidad debe ser mayor a 0");
             }
             if (compra.getCostoUnitario() == null || compra.getCostoUnitario().compareTo(BigDecimal.ZERO) < 0) {
@@ -79,7 +80,7 @@ public class ComprasController {
                 producto.setNombre(compra.getNombreProducto());
                 producto.setTipo("Compra");
                 producto.setPrecio(compra.getCostoUnitario());
-                producto.setCantidad(new BigDecimal(compra.getCantidad()));
+                producto.setCantidad(compra.getCantidad());
                 logger.info("Creando nuevo producto '{}' con cantidad inicial={} y precio={}", 
                            producto.getNombre(), producto.getCantidad(), producto.getPrecio());
                 producto = productoRepository.save(producto);
@@ -87,7 +88,7 @@ public class ComprasController {
                            producto.getId(), producto.getNombre(), producto.getCantidad());
             } else {
                 // Actualizar cantidad del producto existente de forma atómica
-                BigDecimal cantidadAgregar = new BigDecimal(compra.getCantidad());
+                BigDecimal cantidadAgregar = compra.getCantidad();
                 logger.info("Incrementando producto id={} en {}", producto.getId(), cantidadAgregar);
                 
                 int maxRetries = 3;
@@ -165,7 +166,8 @@ public class ComprasController {
             }
             
             Compra e = existing.get();
-            Integer cantidadAnterior = e.getCantidad();
+            // cantidad en el modelo es BigDecimal
+            BigDecimal cantidadAnterior = e.getCantidad();
             Long productoIdAnterior = e.getProductoId();
             
             // Si cambia el producto o la cantidad, ajustar inventario
@@ -173,13 +175,14 @@ public class ComprasController {
                 // Revertir cantidad del producto anterior
                 Producto productoAnterior = productoRepository.findById(productoIdAnterior)
                         .orElseThrow(() -> new InventarioException("Producto anterior no encontrado"));
-                productoRepository.incrementCantidad(productoAnterior.getId(), new BigDecimal(cantidadAnterior).negate());
+                // Revertir usando BigDecimal directamente
+                productoRepository.incrementCantidad(productoAnterior.getId(), cantidadAnterior.negate());
                 logger.info("Revertida cantidad {} del producto id={}", cantidadAnterior, productoIdAnterior);
                 
                 // Agregar cantidad al nuevo producto
                 Producto productoNuevo = productoRepository.findById(compra.getProductoId())
                         .orElseThrow(() -> new InventarioException("Producto nuevo no encontrado"));
-                productoRepository.incrementCantidad(productoNuevo.getId(), new BigDecimal(compra.getCantidad()));
+                productoRepository.incrementCantidad(productoNuevo.getId(), compra.getCantidad());
                 logger.info("Agregada cantidad {} al producto id={}", compra.getCantidad(), compra.getProductoId());
                 
                 e.setNombreProducto(productoNuevo.getNombre());
@@ -222,12 +225,13 @@ public class ComprasController {
             }
             
             // Revertir el stock del inventario
-            Compra c = compra.get();
+        Compra c = compra.get();
             Producto producto = productoRepository.findById(c.getProductoId())
                     .orElseThrow(() -> new InventarioException("Producto no encontrado"));
             
-            BigDecimal cantidadRevertir = new BigDecimal(c.getCantidad()).negate();
-            productoRepository.incrementCantidad(producto.getId(), cantidadRevertir);
+        // c.getCantidad() ya es BigDecimal
+        BigDecimal cantidadRevertir = c.getCantidad().negate();
+        productoRepository.incrementCantidad(producto.getId(), cantidadRevertir);
             logger.info("Stock revertido al eliminar compra. Producto id={} cantidad revertida={}", producto.getId(), cantidadRevertir);
             
             compraRepository.deleteById(id);

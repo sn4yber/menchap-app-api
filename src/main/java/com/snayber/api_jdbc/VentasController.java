@@ -55,6 +55,7 @@ public class VentasController {
 
     @PostMapping
     @Transactional(rollbackFor = Exception.class)
+    @org.springframework.cache.annotation.CacheEvict(value = "dashboardCompleto", allEntries = true)
     public ResponseEntity<?> registrarVenta(@RequestBody Venta venta) {
         logger.debug("Iniciando registro de venta: {}", venta);
         try {
@@ -62,7 +63,7 @@ public class VentasController {
             if (venta.getProductoId() == null) {
                 return ResponseEntity.badRequest().body("productoId es obligatorio");
             }
-            if (venta.getCantidad() == null || venta.getCantidad() <= 0) {
+            if (venta.getCantidad() == null || venta.getCantidad().compareTo(BigDecimal.ZERO) <= 0) {
                 return ResponseEntity.badRequest().body("cantidad debe ser mayor a 0");
             }
 
@@ -71,7 +72,7 @@ public class VentasController {
                     .orElseThrow(() -> new InventarioException("Producto con id " + venta.getProductoId() + " no encontrado"));
 
             // Verificar stock disponible
-            BigDecimal cantidadVenta = new BigDecimal(venta.getCantidad());
+            BigDecimal cantidadVenta = venta.getCantidad();
             if (producto.getCantidad().compareTo(cantidadVenta) < 0) {
                 throw new InventarioException("Stock insuficiente. Disponible: " + producto.getCantidad() + ", Solicitado: " + cantidadVenta);
             }
@@ -161,12 +162,12 @@ public class VentasController {
                 // Devolver stock del producto original
                 Producto productoOriginal = productoRepository.findById(e.getProductoId())
                         .orElseThrow(() -> new InventarioException("Producto original no encontrado"));
-                productoRepository.incrementCantidad(productoOriginal.getId(), new BigDecimal(e.getCantidad()));
+                productoRepository.incrementCantidad(productoOriginal.getId(), e.getCantidad());
                 
                 // Reducir stock del nuevo producto
                 Producto productoNuevo = productoRepository.findById(venta.getProductoId())
                         .orElseThrow(() -> new InventarioException("Producto nuevo no encontrado"));
-                BigDecimal cantidadVenta = new BigDecimal(venta.getCantidad());
+                BigDecimal cantidadVenta = venta.getCantidad();
                 
                 if (productoNuevo.getCantidad().compareTo(cantidadVenta) < 0) {
                     throw new InventarioException("Stock insuficiente en producto nuevo");
@@ -190,7 +191,7 @@ public class VentasController {
             }
             
             // Recalcular totales
-            BigDecimal cantidadVenta = new BigDecimal(e.getCantidad());
+            BigDecimal cantidadVenta = e.getCantidad();
             e.setPrecioTotal(e.getPrecioUnitario().multiply(cantidadVenta));
             e.setGanancia(e.calcularGanancia());
             
@@ -220,7 +221,7 @@ public class VentasController {
             Producto producto = productoRepository.findById(v.getProductoId())
                     .orElseThrow(() -> new InventarioException("Producto no encontrado"));
             
-            BigDecimal cantidadDevolver = new BigDecimal(v.getCantidad());
+            BigDecimal cantidadDevolver = v.getCantidad();
             productoRepository.incrementCantidad(producto.getId(), cantidadDevolver);
             
             logger.info("Stock devuelto al eliminar venta. Producto id={} cantidad devuelta={}", producto.getId(), cantidadDevolver);
